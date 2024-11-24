@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "867300899384",
+    "project_id": "funiture-database",
+    "storage_bucket": "funiture-database.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:867300899384:android:44a97e872247aa33ddc4cd",
+        "android_client_info": {
+          "package_name": "com.example.furnitureapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvpmVcyC_4JCIAJM8sBVxju-N0cWF3Yr8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
