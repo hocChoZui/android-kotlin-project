@@ -8,8 +8,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.furnitureapp.MainScreen
-import com.example.furnitureapp.screens.home.EmptyOrderScreen
+import com.example.furnitureapp.screens.cart.CartScreen
+import com.example.furnitureapp.screens.cart.EmptyCart
 import com.example.furnitureapp.screens.home.HomeScreen
+import com.example.furnitureapp.screens.order.EmptyOrders
+import com.example.furnitureapp.screens.order.OrderDetailsScreen
+import com.example.furnitureapp.screens.order.OrderSummaryScreen
+import com.example.furnitureapp.screens.order.OrdersScreen
 import com.example.furnitureapp.screens.user.ProfileScreen
 import com.example.furnitureapp.screens.welcome.LoginScreen
 import com.example.furnitureapp.screens.welcome.RegisterScreen
@@ -31,7 +36,7 @@ fun FurnitureNavGraph(modifier: Modifier = Modifier, authViewModel: AuthViewMode
             HomeScreen(modifier, navController)
         }
         composable(route = Screen.EmptyOrderScreen.route) {
-            EmptyOrderScreen(navController)
+            EmptyOrders(modifier,navController)
         }
         composable(route = Screen.RegisterScreen.route) {
             RegisterScreen(modifier, navController, authViewModel)
@@ -41,6 +46,21 @@ fun FurnitureNavGraph(modifier: Modifier = Modifier, authViewModel: AuthViewMode
         }
         composable(route = Screen.ProfileScreen.route) {
             ProfileScreen(modifier, navController,authViewModel)
+        }
+        composable(route = Screen.Order.route) {
+            OrdersScreen(modifier,navController)
+        }
+        composable(route = Screen.EmptyCart.route)  {
+            EmptyCart(modifier,navController)
+        }
+        composable(route = Screen.Cart.route) {
+            CartScreen(modifier,navController)
+        }
+        composable(route = Screen.OrderSummary.route) {
+            OrderSummaryScreen(modifier,navController)
+        }
+        composable(route = Screen.OrderDetail.route) {
+            OrderDetailsScreen(modifier,navController)
         }
     }
 }

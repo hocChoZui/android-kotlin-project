@@ -1,8 +1,6 @@
 package com.example.furnitureapp
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -11,13 +9,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.furnitureapp.components.BottomNavBar
 import com.example.furnitureapp.model.NavBarItem
-import com.example.furnitureapp.screens.home.EmptyOrderScreen
+import com.example.furnitureapp.screens.cart.EmptyCart
 import com.example.furnitureapp.screens.home.HomeScreen
+import com.example.furnitureapp.screens.order.EmptyOrders
 import com.example.furnitureapp.screens.user.ProfileScreen
 import com.example.furnitureapp.viewmodel.AuthViewModel
 
@@ -59,7 +56,8 @@ fun MainScreen( modifier: Modifier = Modifier,navController: NavController,authV
 fun ContentScreen(navController: NavController,modifier: Modifier = Modifier, selectedIndex: Int ,authViewModel: AuthViewModel) {
     when(selectedIndex){
         0-> HomeScreen(modifier,navController )
-        1->EmptyOrderScreen(navController)
+        1-> EmptyCart(modifier,navController)
+        2-> EmptyOrders(modifier,navController)
         4-> ProfileScreen(modifier,navController,authViewModel)
     }
 }
