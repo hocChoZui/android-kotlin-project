@@ -60,6 +60,6 @@ fun ContentScreen(navController: NavController,modifier: Modifier = Modifier, se
     when(selectedIndex){
         0-> HomeScreen(modifier,navController )
         1->EmptyOrderScreen(navController)
-        4-> ProfileScreen(modifier,navController)
+        4-> ProfileScreen(modifier,navController,authViewModel)
     }
 }

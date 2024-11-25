@@ -227,8 +227,8 @@ Column (modifier = Modifier.fillMaxSize()){
             OutlinedButton(
                 onClick = {},
                 modifier = Modifier
-                    .width(80.dp)
-                    .height(60.dp),
+                    .width(90.dp)
+                    .height(55.dp),
                 border = BorderStroke(0.7.dp, color = Color(0xFF9e9e9e)),
                 shape = RoundedCornerShape(24)
             ){
@@ -243,8 +243,8 @@ Column (modifier = Modifier.fillMaxSize()){
             OutlinedButton(
                 onClick = {},
                 modifier = Modifier
-                    .width(80.dp)
-                    .height(60.dp),
+                    .width(90.dp)
+                    .height(55.dp),
                 border = BorderStroke(0.7.dp, color = Color(0xFF9e9e9e)),
                 shape = RoundedCornerShape(24)
             ) {
@@ -259,8 +259,8 @@ Column (modifier = Modifier.fillMaxSize()){
             OutlinedButton(
                 onClick = {},
                 modifier = Modifier
-                    .width(80.dp)
-                    .height(60.dp),
+                    .width(90.dp)
+                    .height(55.dp),
                 border = BorderStroke(0.7.dp, color = Color(0xFF9e9e9e)),
                 shape = RoundedCornerShape(24)
             ) {

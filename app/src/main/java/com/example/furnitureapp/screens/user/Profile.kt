@@ -19,10 +19,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,25 +45,34 @@ import com.example.furnitureapp.R
 import com.example.furnitureapp.components.CommonTitle
 import com.example.furnitureapp.components.SpacerHeight
 import com.example.furnitureapp.components.SpacerWidth
+import com.example.furnitureapp.viewmodel.AuthState
+import com.example.furnitureapp.viewmodel.AuthViewModel
+import com.google.android.gms.auth.api.Auth
 
 @Composable
-fun ProfileScreen(modifier: Modifier = Modifier,navController: NavController){
+fun ProfileScreen(modifier: Modifier = Modifier,navController: NavController,authViewModel: AuthViewModel){
+    LaunchedEffect(Unit) {
+        authViewModel.CheckAuthStatus()
+    }
 
     Column(
         modifier = Modifier.fillMaxSize().background(Color(0XFFf9f9f9)),
     ){
 
-        ProfileHeader(navController)
+        ProfileHeader(navController,authViewModel)
         SpacerHeight(12.dp)
         ProfileOrder()
+        SpacerHeight(12.dp)
+        LogoutButton(authViewModel)
     }
 }
 
 @Composable
-fun ProfileHeader(navController: NavController){
+fun ProfileHeader(navController: NavController,authViewModel: AuthViewModel){
+
+    val authState = authViewModel.authState.observeAsState()
+
     val colors = listOf(Color(0xFFE7E2FA), Color(0xFFF3F0FD))
-
-
 
         SpacerHeight(12.dp)
         Row(modifier = Modifier
@@ -73,65 +85,70 @@ fun ProfileHeader(navController: NavController){
             Image(
                 painterResource(id = R.drawable.avatar),
                 contentDescription = "avatar",
-                modifier = Modifier.size(68 .dp).clip(CircleShape),
+                modifier = Modifier.size(64.dp).clip(CircleShape),
                 contentScale = ContentScale.Crop
             )
             SpacerWidth(16.dp)
-            // Sau khi đang nhap thanh cong
-//    Box(
-//    modifier = Modifier.weight(1f)
-//    ){
-//        Column(verticalArrangement = Arrangement.SpaceBetween,) {
-//            Text(text = "Username", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.W600))
-//            SpacerHeight(6.dp)
-//            Text(text = "Thành viên: ", style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.W400))
-//        }
-//        Box(modifier = Modifier
-//            .clickable {  }
-//            .size(42.dp)
-//            .clip(CircleShape)
-//            .align(Alignment.CenterEnd)
-//            .clickable {  },
-//
-//            ){
-//            Icon(
-//                painterResource(id = R.drawable.note_pen),
-//                contentDescription = "Edit profile",
-//                modifier = Modifier.size(24.dp).align(Alignment.Center))
-//        }
-//
-//    }
 
-            //Truoc khi dang nhap
 
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.BottomEnd
-            ){
-                Row(
 
+            if(authState.value is AuthState.HuyXacThuc){
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.BottomEnd
                 ){
-                    Button  (onClick = {navController.navigate("login_screen") }, shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.White,
-                            contentColor = Color(0xFFA18AEC),
+                    Row(
 
-                            )) {
-                        Text(text = "Đăng nhập", style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.W400))
-                    }
-                    SpacerWidth(8.dp)
+                    ){
+                        Button  (onClick = {navController.navigate("login_screen") }, shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White,
+                                contentColor = Color(0xFFA18AEC),
 
-                    OutlinedButton (onClick = { navController.navigate("register_screen") },
-                        shape = RoundedCornerShape(8.dp),
-                        border = BorderStroke(1.dp, Color.White),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = Color(0xFFA18AEC),
-                            contentColor = Color.White)
-                    ) {
-                        Text(text = "Đăng ký", style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.W400))
+                                )) {
+                            Text(text = "Đăng nhập", style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.W400))
+                        }
+                        SpacerWidth(8.dp)
+
+                        OutlinedButton (onClick = { navController.navigate("register_screen") },
+                            shape = RoundedCornerShape(8.dp),
+                            border = BorderStroke(1.dp, Color.White),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = Color(0xFFA18AEC),
+                                contentColor = Color.White)
+                        ) {
+                            Text(text = "Đăng ký", style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.W400))
+                        }
                     }
                 }
             }
+            if (authState.value is AuthState.XacThuc){
+                Box(
+                    modifier = Modifier.weight(1f)
+                ){
+                    Column(verticalArrangement = Arrangement.SpaceBetween,) {
+                        Text(text = "Username", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.W600))
+                        SpacerHeight(6.dp)
+                        Text(text = "Thành viên: ", style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.W400))
+                    }
+                    Box(modifier = Modifier
+                        .clickable {  }
+                        .size(42.dp)
+                        .clip(CircleShape)
+                        .align(Alignment.CenterEnd)
+                        .clickable {  },
+
+                        ){
+                        Icon(
+                            painterResource(id = R.drawable.note_pen),
+                            contentDescription = "Edit profile",
+                            modifier = Modifier.size(24.dp).align(Alignment.Center))
+                    }
+
+                }
+            }
+
+
 
         }
     }
@@ -144,8 +161,8 @@ fun ProfileOrder(){
    Column(modifier = Modifier.fillMaxWidth().background(Color.White).padding(horizontal = 20.dp)){
        CommonTitle(title)
        Row(modifier = Modifier
-           .fillMaxWidth()
-           .padding(16.dp),
+           .fillMaxWidth(),
+
            horizontalArrangement = Arrangement.SpaceBetween
        ){
            OrderStatusItem(iconId = R.drawable.wallet,text = "Chờ \nthanh toán")
@@ -177,4 +194,35 @@ fun OrderStatusItem(iconId :Int , text: String) {
             overflow = TextOverflow.Ellipsis
         )
     }
+}
+
+@Composable
+fun LogoutButton(authViewModel: AuthViewModel){
+
+    val authState = authViewModel.authState.observeAsState()
+
+    if(authState.value is AuthState.XacThuc){
+        Row(
+            modifier= Modifier.fillMaxWidth()
+                .padding(bottom = 20.dp),
+            horizontalArrangement = Arrangement.Center
+        ){
+            OutlinedButton (
+                modifier = Modifier.weight(1f).padding(horizontal = 20.dp),
+                onClick = { authViewModel.Logout() },
+                shape = RoundedCornerShape(4.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor =Color(0XFFf9f9f9),
+                    contentColor = Color(0xFFA18AEC)
+                )
+            ) {
+                Text(text = "Đăng xuất", style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.W400))
+            }
+        }
+    }
+
+
+
+
+
 }

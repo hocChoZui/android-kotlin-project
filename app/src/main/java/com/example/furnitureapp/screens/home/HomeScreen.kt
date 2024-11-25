@@ -35,6 +35,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
@@ -76,7 +77,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
             .background(Color.White)
     ) {
         item {
-            MySearchBar(navController)
+            MySearchBar()
             SliderBanner()
             SpacerHeight(12.dp)
             CategoriesRow()
@@ -91,33 +92,33 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
 
 
 @Composable
-fun MySearchBar(navController: NavController) {
+fun MySearchBar() {
     var searchString by remember { mutableStateOf("") }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(108.dp),
+                    .height(100.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 OutlinedTextField(
                     value = searchString,
                     onValueChange = { searchString = it },
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 16.dp)
-                        .height(52.dp)
+                        .fillMaxWidth()
+                        .height(48.dp)
                         .clickable {
                         },
+                    placeholder = {Text(text = "Tìm kiếm sản phẩm", style = TextStyle(fontSize = 15.sp))},
                     shape = RoundedCornerShape(24.dp),
-                    placeholder = { Text(text = "Bạn muốn tìm gì?",) },
                     readOnly = true,
                     colors = TextFieldDefaults.colors(
                         unfocusedIndicatorColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedContainerColor = Color(0xFFf4f4f4),
-                        focusedContainerColor = Color(0xFFf4f4f4),
-
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedContainerColor = Color(0xFFf4f4f4),
+                    focusedContainerColor = Color(0xFFf4f4f4),
                     ),
+
+
 
                     leadingIcon = {
                         Icon(
@@ -127,18 +128,6 @@ fun MySearchBar(navController: NavController) {
                     }
                 )
 
-                Image(
-                    painter = painterResource(id = R.drawable.avatar),
-                    contentDescription = "Profile",
-                    modifier = Modifier
-                        .size(52.dp)
-                        .clip(CircleShape)
-                        .clickable {
-                            navController.navigate("login_screen")
-                        },
-                    contentScale = ContentScale.Crop,
-                    )
-                Spacer(modifier = Modifier.width(8.dp))
             }
 
 }

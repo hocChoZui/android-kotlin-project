@@ -40,7 +40,7 @@ fun FurnitureNavGraph(modifier: Modifier = Modifier, authViewModel: AuthViewMode
             MainScreen(modifier,navController,authViewModel)
         }
         composable(route = Screen.ProfileScreen.route) {
-            ProfileScreen(modifier, navController)
+            ProfileScreen(modifier, navController,authViewModel)
         }
     }
 }
