@@ -47,7 +47,6 @@ import com.example.furnitureapp.components.SpacerHeight
 import com.example.furnitureapp.components.SpacerWidth
 import com.example.furnitureapp.viewmodel.AuthState
 import com.example.furnitureapp.viewmodel.AuthViewModel
-import com.google.android.gms.auth.api.Auth
 
 @Composable
 fun ProfileScreen(modifier: Modifier = Modifier,navController: NavController,authViewModel: AuthViewModel){
