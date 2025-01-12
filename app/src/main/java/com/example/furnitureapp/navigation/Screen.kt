@@ -13,7 +13,8 @@ sealed class Screen(val route:String){
     object OrderDetail : Screen (route = "order_detail")
     object EmptyCart : Screen (route = "empty_cart")
     object Cart : Screen (route = "cart")
-
+    object ShowProductByCategoryName : Screen (route = "show_product_by_category")
+    object ProductDetailScreen : Screen(route = "show_product_by_id")
 
 
 }

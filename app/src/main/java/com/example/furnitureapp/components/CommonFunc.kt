@@ -16,12 +16,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -29,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.furnitureapp.R
 import com.example.furnitureapp.model.TopSellingProduct
 
@@ -45,13 +48,15 @@ fun SpacerHeight(height : Dp = 10.dp){
 @Composable
 fun ProductEachRow(data : TopSellingProduct,
                    modifier: Modifier = Modifier,
-                   onClick : () -> Unit = {}
+                   navController: NavController,
+                   onClick : (Int) -> Unit
 ){
+    val productId = data.id
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp))
             .background(Color(0xFFf3f3f3))
-            .clickable { onClick()}
+            .clickable { onClick(productId) }
     ){
         Column {
             Box{
@@ -118,18 +123,21 @@ fun BackBtnAndTitle(modifier: Modifier = Modifier,title: String){
     ) {
 
         Box(modifier = Modifier
-            .clickable {  }
+            .clickable { }
             .size(42.dp)
             .clip(CircleShape)
             .align(Alignment.CenterStart)
-            .clickable {  },
+            .clickable { },
 
 
         ){
             Icon(
                 painterResource(id = R.drawable.arrowleft2),
                 contentDescription = "Back Icon",
-                modifier = Modifier.size(24.dp).align(Alignment.Center),)
+                modifier = Modifier
+                    .size(24.dp)
+                    .align(Alignment.Center)
+            )
         }
 
         Text(
@@ -137,6 +145,21 @@ fun BackBtnAndTitle(modifier: Modifier = Modifier,title: String){
             style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.W600),
             modifier = Modifier.align(Alignment.Center)
         )
+    }
+}
+
+@Composable
+fun BackButton(onClick: () -> Unit = {} ){
+    Box(modifier = Modifier
+        .size(42.dp)
+        .clip(CircleShape)
+    ){
+        IconButton(onClick =onClick) {
+            Icon(painter = painterResource(id = R.drawable.arrowleft2),
+                contentDescription = "Favorite",
+                modifier = Modifier.size(20.dp)
+            )
+        }
     }
 }
 
@@ -150,8 +173,8 @@ fun CommonTitle(title : String , onClick : () -> Unit = {}){
     ){
         Text(text = title,style = TextStyle(
             fontSize = 20.sp,
-            fontWeight = FontWeight.W600,
-            color = Color.Black
+            fontWeight = FontWeight.W500,
+            color = Color.DarkGray
         ))
         TextButton(
             onClick = onClick

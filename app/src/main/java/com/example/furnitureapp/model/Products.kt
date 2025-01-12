@@ -51,5 +51,20 @@ val topSellingProductList = listOf(
         R.drawable.discountshape,
         "12.000.000 đ"
         ),
+    TopSellingProduct(9,
+        "Test 5",
+        R.drawable.discountshape,
+        "12.000.000 đ"
+    ),
+    TopSellingProduct(10,
+        "Test 5",
+        R.drawable.discountshape,
+        "12.000.000 đ"
+    ),
+    TopSellingProduct(11,
+        "Test 5",
+        R.drawable.discountshape,
+        "12.000.000 đ"
+    ),
 )
 

@@ -12,10 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.furnitureapp.components.BottomNavBar
 import com.example.furnitureapp.model.NavBarItem
-import com.example.furnitureapp.screens.cart.EmptyCart
-import com.example.furnitureapp.screens.home.HomeScreen
-import com.example.furnitureapp.screens.order.EmptyOrders
-import com.example.furnitureapp.screens.user.ProfileScreen
+import com.example.furnitureapp.view.cart.EmptyCart
+import com.example.furnitureapp.view.home.HomeScreen
+import com.example.furnitureapp.view.order.EmptyOrders
+import com.example.furnitureapp.view.user.ProfileScreen
 import com.example.furnitureapp.viewmodel.AuthViewModel
 
 

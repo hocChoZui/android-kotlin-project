@@ -2,22 +2,24 @@ package com.example.furnitureapp.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.furnitureapp.MainScreen
-import com.example.furnitureapp.screens.cart.CartScreen
-import com.example.furnitureapp.screens.cart.EmptyCart
-import com.example.furnitureapp.screens.home.HomeScreen
-import com.example.furnitureapp.screens.order.EmptyOrders
-import com.example.furnitureapp.screens.order.OrderDetailsScreen
-import com.example.furnitureapp.screens.order.OrderSummaryScreen
-import com.example.furnitureapp.screens.order.OrdersScreen
-import com.example.furnitureapp.screens.user.ProfileScreen
-import com.example.furnitureapp.screens.welcome.LoginScreen
-import com.example.furnitureapp.screens.welcome.RegisterScreen
+import com.example.furnitureapp.view.cart.CartScreen
+import com.example.furnitureapp.view.cart.EmptyCart
+import com.example.furnitureapp.view.categories.ShowProductByCategory
+import com.example.furnitureapp.view.home.HomeScreen
+import com.example.furnitureapp.view.order.EmptyOrders
+import com.example.furnitureapp.view.order.OrderDetailsScreen
+import com.example.furnitureapp.view.order.OrderSummaryScreen
+import com.example.furnitureapp.view.order.OrdersScreen
+import com.example.furnitureapp.view.product.ProductDetailScreen
+import com.example.furnitureapp.view.user.ProfileScreen
+import com.example.furnitureapp.view.welcome.LoginScreen
+import com.example.furnitureapp.view.welcome.RegisterScreen
 import com.example.furnitureapp.viewmodel.AuthViewModel
 
 
@@ -61,6 +63,20 @@ fun FurnitureNavGraph(modifier: Modifier = Modifier, authViewModel: AuthViewMode
         }
         composable(route = Screen.OrderDetail.route) {
             OrderDetailsScreen(modifier,navController)
+        }
+        composable(route = Screen.ShowProductByCategoryName.route+ "/{categoryName}",
+                arguments = listOf(navArgument("categoryName") { type = NavType.StringType })
+        ) {backStackEntry ->
+            val categoryName = backStackEntry.arguments?.getString("categoryName") ?: ""
+            ShowProductByCategory(categoryName, navController)
+
+        }
+        composable(route = Screen.ProductDetailScreen.route + "/{productId}",
+            arguments = listOf(navArgument("productId"){type = NavType.IntType})
+        ){
+            backStackEntry ->
+            val productId = backStackEntry.arguments?.getInt("productId") ?:0
+            ProductDetailScreen(productId,navController)
         }
     }
 }
