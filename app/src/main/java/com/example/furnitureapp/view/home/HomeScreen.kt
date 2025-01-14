@@ -35,6 +35,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -61,19 +62,26 @@ import com.example.furnitureapp.components.SpacerHeight
 import com.example.furnitureapp.model.Categories
 import com.example.furnitureapp.model.Product
 import com.example.furnitureapp.model.bannerList
-import com.example.furnitureapp.model.categoriesList
 import com.example.furnitureapp.model.topSellingProductList
+import com.example.furnitureapp.viewmodel.CategoryViewModel
 import com.example.furnitureapp.viewmodel.ProductViewModel
 import kotlinx.coroutines.delay
 
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier, navController: NavController,productViewModel: ProductViewModel) {
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    productViewModel: ProductViewModel,
+    categoryViewModel: CategoryViewModel
+) {
 
     val listOfProduct = productViewModel.listProduct
+    val listOfCategories = categoryViewModel.listOfCategories
 
     LaunchedEffect(Unit) {
         productViewModel.getAllProduct()
+        categoryViewModel.getAllCategory()
     }
 
 
@@ -89,7 +97,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController,produ
             item {
                 SliderBanner()
                 SpacerHeight(12.dp)
-                CategoriesRow(navController)
+                CategoriesRow(navController,listOfCategories)
                 NewProductRow(navController,listOfProduct)
                 SpacerHeight(16.dp)
                 TopSellingColumn(navController,listOfProduct)
@@ -99,9 +107,6 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController,produ
     }
 
 }
-
-
-
 
 @Composable
 fun MySearchBar() {
@@ -130,8 +135,6 @@ fun MySearchBar() {
                     focusedContainerColor = Color(0xFFf4f4f4),
                     ),
 
-
-
                     leadingIcon = {
                         Icon(
                             painter = painterResource(id =R.drawable.search),
@@ -141,37 +144,49 @@ fun MySearchBar() {
                 )
 
             }
-
 }
 
 @Composable
-fun CategoriesRow(navController: NavController){
+fun CategoriesRow(navController: NavController, listOfCategories: List<Categories>?) {
     Column {
         CommonTitle("Danh mục sản phẩm")
         SpacerHeight(12.dp)
-        LazyRow (
 
-        ){
-        items(categoriesList, key = {it.cateResId}) {
-            CategoryEachRow(categories = it,navController = navController){
-                categoryName -> navController.navigate("show_product_by_category/$categoryName")
+        if (listOfCategories.isNullOrEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
-        }
+        } else {
+            LazyRow {
+                items(listOfCategories, key = { it.ma_loai }) { category ->
+                    CategoryEachRow(categories = category, navController = navController) {id, name ->
+                        navController.navigate("show_product_by_category/$id/$name")
+                    }
+                }
+            }
         }
     }
 }
 
+
 @Composable
 fun CategoryEachRow(categories: Categories,
                     navController: NavController,
-                    onCategoryClick: (String) -> Unit) {
-    val categoryName = categories.name
+                    onCategoryClick: (Int,String) -> Unit,
+) {
+    val categoryId = categories.ma_loai
+    val categoryName = categories.ten_loai
     Column(
         modifier = Modifier
             .padding(end = 12.dp)
             .width(64.dp)
             .clickable {
-                onCategoryClick(categoryName)
+                onCategoryClick(categoryId,categoryName)
             },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
@@ -181,11 +196,11 @@ fun CategoryEachRow(categories: Categories,
             modifier = Modifier
                 .size(56.dp)
                 .clip(CircleShape)
-                .background(Color(0xFFDFDFDF)),
+                .background(Color(0xFFf3f3f3)),
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = painterResource(id = categories.cateResId),
+                painter = painterResource(id = R.drawable.bookshelf),
                 contentDescription = "",
                 modifier = Modifier.size(38.dp),
                 contentScale = ContentScale.Fit
@@ -193,7 +208,7 @@ fun CategoryEachRow(categories: Categories,
 
         }
         Text(
-            text = categories.name,
+            text = categories.ten_loai ?: "haha",
             style = TextStyle(
                 fontSize = 12.sp,
                 fontWeight = FontWeight.W400,
@@ -241,7 +256,7 @@ fun NewProductRow(navController: NavController,listOfProduct : List<Product>){
         ){
             items(listOfProduct, key = { it.id }) { product ->
                 ProductEachRow(product = product,navController = navController){
-                        productId -> navController.navigate("show_product_by_id/$productId")
+                    navController.navigate("show_product_by_id/${product.id}")
                 }
             }
         }

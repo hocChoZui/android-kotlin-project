@@ -34,6 +34,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -63,134 +64,149 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.furnitureapp.R
 import com.example.furnitureapp.components.BackButton
-import com.example.furnitureapp.components.CommonTitle
-import com.example.furnitureapp.components.ProductEachRow
 import com.example.furnitureapp.components.SpacerHeight
 import com.example.furnitureapp.components.SpacerWidth
-import com.example.furnitureapp.model.Categories
-import com.example.furnitureapp.model.TopSellingProduct
-import com.example.furnitureapp.model.bannerList
-import com.example.furnitureapp.model.categoriesList
-import com.example.furnitureapp.model.topSellingProductList
-import com.example.furnitureapp.view.home.PageIndicator
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+
 
 import androidx.compose.material3.Scaffold
+import com.example.furnitureapp.model.Product
+import com.example.furnitureapp.viewmodel.ProductViewModel
 
 @Composable
-fun ProductDetailScreen(productId: Int ,navController: NavController) {
-    val product = topSellingProductList.find { it.id == productId }
-
-    Scaffold(
-        modifier = Modifier.padding(top = 12.dp, start = 8.dp, end = 8.dp, bottom = 4.dp),
-        containerColor =  Color.LightGray,
-        topBar = {
-
-            TopBar(
-                onBackClick = {navController.popBackStack()},
-                onCartClick = {},
-                onMoreClick = {},
-
-            )
-        },
-        bottomBar = {
-            AddToCartButton(
-                onAddClick = {},
-                onChatClick = {},
-            )
-        }
-
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            item {
-
-                ImageSlider()
-                ProductTitle(productId)
-                SpacerHeight(16.dp)
-                //RelatedProducts(navController)
-                SpacerHeight(16.dp)
-                ProductDescription()
-            }
-        }
+fun ProductDetailScreen(productId: Int ,
+                        navController: NavController,
+                        productViewModel: ProductViewModel
+) {
+    LaunchedEffect(Unit) {
+        productViewModel.getProductById(productId)
     }
-}
+    val product = productViewModel.product
 
-
-@Composable
-fun ImageSlider() {
-    val pagerState = rememberPagerState(pageCount = { categoriesList.size })
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(406.dp)
-            .background(color = Color(0XFFffffff))
-    ) {
-
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.height(300.dp)
-        ) { currentPage ->
-            Image(
-                painter = painterResource(id = categoriesList[currentPage].cateResId),
-                contentDescription = "",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-
-        LazyRow(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-        ) {
-            items(categoriesList, key = { it.cateResId }) {
-                ImageEachRow(categories = it, pagerState = pagerState)
-            }
-        }
-    }
-}
-
-
-@Composable
-fun ImageEachRow(categories: Categories,pagerState:PagerState){
-    val index = categoriesList.indexOf(categories)
-    val coroutineScope = rememberCoroutineScope()
-    Column(
-        modifier = Modifier
-            .padding(end = 12.dp)
-            .width(64.dp)
-            .height(76.dp)
-            .border(0.5.dp, Color.Gray,)
-            .clickable {
-                coroutineScope.launch {
-                    pagerState.animateScrollToPage(index)
-                }
-            },
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-
+    if(product.id == 0){
         Box(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                painter = painterResource(id = categories.cateResId),
-                contentDescription = "",
-                modifier = Modifier.size(54.dp),
-                contentScale = ContentScale.Fit
-            )
-
+            CircularProgressIndicator()
         }
     }
+    else{
+        Scaffold(
+            modifier = Modifier.padding(top = 12.dp, start = 8.dp, end = 8.dp, bottom = 4.dp),
+            containerColor =  Color.LightGray,
+            topBar = {
+
+                TopBar(
+                    onBackClick = {navController.popBackStack()},
+                    onCartClick = {},
+                    onMoreClick = {},
+
+                    )
+            },
+            bottomBar = {
+                AddToCartButton(
+                    onAddClick = {},
+                    onChatClick = {},
+                )
+            }
+
+        ) { paddingValues ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                item {
+                    if (product!=null){
+                        //ImageSlider()
+                        ProductTitle(product)
+                        SpacerHeight(16.dp)
+                        //RelatedProducts(navController)
+                        SpacerHeight(16.dp)
+                        ProductDescription()
+                    }
+
+                }
+            }
+        }
+    }
+
+
 }
+
+
+//@Composable
+//fun ImageSlider(product: Product) {
+//    val pagerState = rememberPagerState(pageCount = { product.size })
+//
+//    Box(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .height(406.dp)
+//            .background(color = Color(0XFFffffff))
+//    ) {
+//
+//        HorizontalPager(
+//            state = pagerState,
+//            modifier = Modifier.height(300.dp)
+//        ) { currentPage ->
+//            Image(
+//                painter = painterResource(id = categoriesList[currentPage].cateResId),
+//                contentDescription = "",
+//                contentScale = ContentScale.Crop,
+//                modifier = Modifier.fillMaxSize()
+//            )
+//        }
+//
+//        LazyRow(
+//            modifier = Modifier
+//                .align(Alignment.BottomCenter)
+//                .fillMaxWidth()
+//        ) {
+//            items(categoriesList, key = { it.cateResId }) {
+//                ImageEachRow(categories = it, pagerState = pagerState)
+//            }
+//        }
+//    }
+//}
+
+
+//@Composable
+//fun ImageEachRow(categories: Categories,pagerState:PagerState){
+//    val index = categoriesList.indexOf(categories)
+//    val coroutineScope = rememberCoroutineScope()
+//    Column(
+//        modifier = Modifier
+//            .padding(end = 12.dp)
+//            .width(64.dp)
+//            .height(76.dp)
+//            .border(0.5.dp, Color.Gray,)
+//            .clickable {
+//                coroutineScope.launch {
+//                    pagerState.animateScrollToPage(index)
+//                }
+//            },
+//        horizontalAlignment = Alignment.CenterHorizontally,
+//        verticalArrangement = Arrangement.SpaceBetween
+//    ) {
+//
+//        Box(
+//            modifier = Modifier
+//                .fillMaxSize(),
+//            contentAlignment = Alignment.Center
+//        ) {
+//            Image(
+//                painter = painterResource(id = categories.cateResId),
+//                contentDescription = "",
+//                modifier = Modifier.size(54.dp),
+//                contentScale = ContentScale.Fit
+//            )
+//
+//        }
+//    }
+//}
 
 @Composable
 fun TopBar(
@@ -227,14 +243,7 @@ fun TopBar(
 }
 
 @Composable
-fun ProductTitle(productId: Int) {
-    val product = topSellingProductList.find { it.id == productId }
-//    val originalPrice = if (product.price.toInt() > 0) {
-//
-//        product.price / (1 - product.discount / 100)
-//    } else {
-//        product.price
-//    }
+fun ProductTitle(product: Product) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -257,7 +266,7 @@ fun ProductTitle(productId: Int) {
                 ) {
 
                     Text(
-                        text = "${product?.name}",
+                        text = "${product.ten_san_pham}",
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
@@ -272,7 +281,7 @@ fun ProductTitle(productId: Int) {
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = "Đánh giá",
-                            tint = Color(0xFFFFD700), // Màu vàng
+                            tint = Color(0xFFFFD700),
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -331,14 +340,14 @@ fun ProductTitle(productId: Int) {
                     text = "-46%",
                     style = TextStyle(
                         fontSize = 16.sp,
-                        color = Color(0XFFEF683A)
+//                        color = Color(0XFFEF683A)
 
                     )
                 )
             }
             SpacerWidth(12.dp)
             Text(
-                text = "${product?.price}",
+                text = "${product.gia}",
                 style = TextStyle(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
@@ -348,7 +357,7 @@ fun ProductTitle(productId: Int) {
             )
             SpacerWidth(12.dp)
             Text(
-                text = "${product?.price}",
+                text = "${product.gia}",
                 style = TextStyle(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.W400,
@@ -415,7 +424,7 @@ fun ProductTitle(productId: Int) {
                             color = Color.Black
                         )
                     ) {
-                        append(" Dài 52cm x Rộng 49cm x Cao đến đệm ngồi/lưng tựa 46cm/74cm")
+                        append(product.kich_thuoc)
                     }
 
 
@@ -444,9 +453,7 @@ fun ProductTitle(productId: Int) {
                         )
                     ) {
                         append("\n")
-                        append("- Gỗ cao su tự nhiên\n")
-                        append("- Vải bọc polyester chống nhăn, kháng bụi bẩn và nấm mốc\n")
-                        append("Chống thấm, cong vênh, trầy xước, mối mọt")
+                        append(product.chat_lieu)
                     }
 
 

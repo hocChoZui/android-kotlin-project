@@ -6,15 +6,15 @@ import com.example.furnitureapp.R
 
 data class Product(
     val id: Int,
-    val cateId: Int,
-    val productName: String,
-    val price: Double,
-    val quantity: Int,
-    val imgUrl: String,
-    val description: String,
-    val size: String,
-    val material: String,
-    val createdDate: String
+    val ma_loai: Int,
+    val ten_san_pham: String,
+    val gia: Double,
+    val so_luong: Int,
+    val anh_dai_dien: String,
+    val mo_ta: String,
+    val kich_thuoc: String,
+    val chat_lieu: String,
+    val ngay_them: String
 )
 
 
@@ -31,7 +31,7 @@ data class TopSellingProduct(
 val topSellingProductList = listOf(
     TopSellingProduct(1,
         "Ghế sofa",
-        R.drawable.seater_sofa,
+        R.drawable.wardrobe,
         "15.000.000 đ"
         ),
     TopSellingProduct(2,

@@ -1,5 +1,6 @@
 package com.example.furnitureapp.components
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,6 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +31,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,6 +40,7 @@ import coil.compose.AsyncImage
 import com.example.furnitureapp.R
 import com.example.furnitureapp.model.Product
 import com.example.furnitureapp.model.TopSellingProduct
+import com.example.furnitureapp.viewmodel.ProductViewModel
 
 @Composable
 fun SpacerWidth(width: Dp = 10.dp){
@@ -48,23 +52,35 @@ fun SpacerHeight(height : Dp = 10.dp){
     Spacer(modifier = Modifier.height(height))
 }
 
+
 @Composable
 fun ProductEachRow(product: Product,
                    modifier: Modifier = Modifier,
                    navController: NavController,
-                   onClick : (Int) -> Unit
+                   onClick : (Int) -> Unit,
 ){
     val productId = product.id
     Box(
         modifier = Modifier
+            .height(240.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(Color(0xFFf3f3f3))
-            .clickable { onClick(productId) }
+            .clickable { onClick(productId) },
+        contentAlignment = Alignment.BottomCenter
     ){
-        Column {
-            Box{
+        Icon(
+            painter = painterResource(id = R.drawable.heart),
+            contentDescription = "Favorite",
+            modifier = Modifier
+                .padding(top = 6.dp, bottom = 14.dp, end = 6.dp)
+                .size(18.dp)
+                .align(Alignment.TopEnd),
+            tint = Color.Unspecified
+        )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(){
 //                Image(
-//                    painter = painterResource(id = product.imageResId),
+//                    painter = painterResource(id = R.drawable.ban_trang_diem01),
 //                    contentDescription = product.productName,
 //                    modifier = Modifier
 //                        .width(160.dp)
@@ -73,21 +89,14 @@ fun ProductEachRow(product: Product,
 //
 //                    )
                 AsyncImage(
-                           modifier = Modifier.size(64.dp).clip(CircleShape),
-                            model = "https://photos.google.com/share/AF1QipMcoK4sfKAurkhCbt8Dy7iRLTC_YS4j-pP5wc1VT1-wgRfgCBPzeFOVtfgZWwTMKw/photo/AF1QipOYCZeTnjDgYb1MZYdRpH5DC0D4h_5Fl8snRRpN?key=aWlKTlRHcGxEZmNrbUNNZTBFLVlQZW9NY3dKWHNn",
+                    modifier = Modifier
+                        .width(145.dp)
+                        .height(155.dp)
+                        .padding(start = 12.dp, end = 12.dp),
+                            model = product.anh_dai_dien,
                            contentDescription = "avatar",
                            contentScale = ContentScale.Crop
                        )
-
-                    Icon(
-                        painter = painterResource(id = R.drawable.heart),
-                        contentDescription = "Favorite",
-                        modifier = Modifier
-                            .padding(12.dp)
-                            .size(18.dp)
-                            .align(Alignment.TopEnd),
-                        tint = Color.Unspecified
-                    )
 
             }
 
@@ -95,12 +104,12 @@ fun ProductEachRow(product: Product,
                 .width(160.dp)
                 .padding(8.dp)
                 .height(40.dp),
-
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.Start
             ) {
-                Text(text = product.productName,
+                Text(text = product.ten_san_pham,
                     maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W400,
@@ -109,7 +118,7 @@ fun ProductEachRow(product: Product,
                         )
 
                 )
-                Text(text = "${product.price}đ",
+                Text(text = "${product.gia}đ",
                     maxLines = 1,
                     style = TextStyle(
                         fontSize = 14.sp,

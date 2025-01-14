@@ -13,11 +13,15 @@ import kotlinx.coroutines.launch
 
 class ProductViewModel : ViewModel() {
     var listProduct: List<Product> by mutableStateOf(emptyList())
+    var listProductByCategoryId : List<Product> by mutableStateOf(emptyList())
+    var product : Product by mutableStateOf(Product(0,0,"",0.0,0,"","","","",""))
 
     fun getAllProduct() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = ProductRetrofitClient.ProductAPIService.getAllProduct()
+                val response = ProductRetrofitClient.productAPIService.getAllProduct()
+                Log.d("ProductViewModel", "Products fetched successfully: ${response.toString()}")
+
                 response.let {
                     listProduct = it
                     Log.d("ProductViewModel", "Products fetched successfully: ${it.size}")
@@ -27,4 +31,40 @@ class ProductViewModel : ViewModel() {
             }
         }
     }
+
+    suspend fun getProductById(id: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response  = ProductRetrofitClient.productAPIService.getProductById(id)
+                Log.d("ProductViewModelId", "API Response: $response")
+            if(response !=null){
+                product = response
+            }else
+            {
+                Log.d("ProductViewModelId", "Product by id : loi")
+            }
+                Log.d("ProductViewModelId", "Product by id fetched successfully: ${product.toString()}")
+
+            } catch (e: Exception) {
+                Log.e("ProductViewModelId", "Error getting product by id: ${e.localizedMessage}")
+            }
+        }
+    }
+
+    fun getProductByCategoryId(id:Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = ProductRetrofitClient.productAPIService.getProductByCateId(id)
+                Log.d("ProductViewModelCate", "Products fetched successfully: ${response.toString()}")
+
+                response.let {
+                    listProductByCategoryId = it
+                    Log.d("ProductViewModelCate", "Products fetched successfully: ${it.size}")
+                } ?: Log.e("ProductViewModel", "No products found in the response")
+            } catch (e: Exception) {
+                Log.e("ProductViewModelCate", "Error getting product: ${e.localizedMessage}")
+            }
+        }
+    }
+
 }

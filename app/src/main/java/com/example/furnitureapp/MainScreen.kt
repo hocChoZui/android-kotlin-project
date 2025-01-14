@@ -17,11 +17,17 @@ import com.example.furnitureapp.view.home.HomeScreen
 import com.example.furnitureapp.view.order.EmptyOrders
 import com.example.furnitureapp.view.user.ProfileScreen
 import com.example.furnitureapp.viewmodel.AuthViewModel
+import com.example.furnitureapp.viewmodel.CategoryViewModel
 import com.example.furnitureapp.viewmodel.ProductViewModel
 
 
 @Composable
-fun MainScreen( modifier: Modifier = Modifier,navController: NavController,authViewModel: AuthViewModel,productViewModel: ProductViewModel){
+fun MainScreen( modifier: Modifier = Modifier,
+                navController: NavController,
+                authViewModel: AuthViewModel,
+                productViewModel: ProductViewModel,
+                categoryViewModel: CategoryViewModel
+){
 
     var selectedIndex by remember { mutableIntStateOf(0) }
     val navBarItems = listOf(
@@ -51,14 +57,22 @@ fun MainScreen( modifier: Modifier = Modifier,navController: NavController,authV
             modifier = Modifier.padding(innerPadding),
             selectedIndex ,
             authViewModel = authViewModel,
-            productViewModel = productViewModel )
+            productViewModel = productViewModel,
+            categoryViewModel = categoryViewModel
+            )
     }
 }
 
 @Composable
-fun ContentScreen(navController: NavController,modifier: Modifier = Modifier, selectedIndex: Int ,authViewModel: AuthViewModel,productViewModel: ProductViewModel) {
+fun ContentScreen(navController: NavController,
+                  modifier: Modifier = Modifier,
+                  selectedIndex: Int ,
+                  authViewModel: AuthViewModel,
+                  productViewModel: ProductViewModel,
+                  categoryViewModel: CategoryViewModel
+) {
     when(selectedIndex){
-        0-> HomeScreen(modifier,navController,productViewModel)
+        0-> HomeScreen(modifier,navController,productViewModel,categoryViewModel)
         1-> EmptyCart(modifier,navController)
         2-> EmptyOrders(modifier,navController)
         4-> ProfileScreen(modifier,navController,authViewModel)
