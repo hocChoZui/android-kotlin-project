@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -37,15 +38,23 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.furnitureapp.R
 import com.example.furnitureapp.components.CommonTitle
 import com.example.furnitureapp.components.SpacerHeight
 import com.example.furnitureapp.components.SpacerWidth
 import com.example.furnitureapp.viewmodel.AuthState
 import com.example.furnitureapp.viewmodel.AuthViewModel
+import com.google.firebase.auth.FirebaseUser
 
 @Composable
-fun ProfileScreen(modifier: Modifier = Modifier,navController: NavController,authViewModel: AuthViewModel){
+fun ProfileScreen(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    authViewModel: AuthViewModel,
+
+){
     LaunchedEffect(Unit) {
         authViewModel.CheckAuthStatus()
     }
@@ -109,6 +118,20 @@ fun ProfileHeader(navController: NavController,authViewModel: AuthViewModel){
                 }
             }
             if (authState.value is AuthState.XacThuc){
+//               currentUser?.let{user->
+//                   user.photoUrl?.let{
+//                       AsyncImage(
+//                           modifier = Modifier.size(64.dp).clip(CircleShape),
+//                            model = ImageRequest.Builder(LocalContext.current)
+//                                .data(it)
+//                                .crossfade(true)
+//                                .build(),
+//                           contentDescription = "avatar",
+//                           contentScale = ContentScale.Crop
+//                       )
+//                   }
+//
+//               }
                 Image(
                     painterResource(id = R.drawable.avatar),
                     contentDescription = "avatar",
@@ -121,7 +144,13 @@ fun ProfileHeader(navController: NavController,authViewModel: AuthViewModel){
                     modifier = Modifier.weight(1f)
                 ){
                     Column(verticalArrangement = Arrangement.SpaceBetween,) {
-                        Text(text = "Username", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.W600))
+//                        currentUser?.let{user->
+//                            user.displayName?.let{name->
+                                Text(text = "name", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.W600))
+                            //}
+
+                        //}
+
                         SpacerHeight(6.dp)
                         Text(text = "Thành viên: ", style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.W400))
                     }
@@ -159,7 +188,7 @@ fun ProfileOrder(){
 
            horizontalArrangement = Arrangement.SpaceBetween
        ){
-           OrderStatusItem(iconId = R.drawable.wallet,text = "Chờ \nthanh toán")
+           OrderStatusItem(iconId = R.drawable.wallet,text = "Chờ \nxác nhận")
            OrderStatusItem(iconId = R.drawable.wallet_income,text = "Chờ\n vận chuyển")
            OrderStatusItem(iconId = R.drawable.shipping_timed,text = "Chờ\n giao hàng")
            OrderStatusItem(iconId = R.drawable.comment_alt,text = "Chưa \nđánh giá")

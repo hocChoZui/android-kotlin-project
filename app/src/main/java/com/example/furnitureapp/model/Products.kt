@@ -3,12 +3,30 @@ package com.example.furnitureapp.model
 import androidx.annotation.DrawableRes
 import com.example.furnitureapp.R
 
+
+data class Product(
+    val id: Int,
+    val cateId: Int,
+    val productName: String,
+    val price: Double,
+    val quantity: Int,
+    val imgUrl: String,
+    val description: String,
+    val size: String,
+    val material: String,
+    val createdDate: String
+)
+
+
 data class TopSellingProduct(
     val id: Int,
     val name: String,
     @DrawableRes val imageResId: Int,
     val price: String,
     )
+
+
+
 
 val topSellingProductList = listOf(
     TopSellingProduct(1,

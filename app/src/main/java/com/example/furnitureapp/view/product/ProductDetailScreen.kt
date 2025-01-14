@@ -112,7 +112,7 @@ fun ProductDetailScreen(productId: Int ,navController: NavController) {
                 ImageSlider()
                 ProductTitle(productId)
                 SpacerHeight(16.dp)
-                RelatedProducts(navController)
+                //RelatedProducts(navController)
                 SpacerHeight(16.dp)
                 ProductDescription()
             }
@@ -461,22 +461,22 @@ fun ProductTitle(productId: Int) {
     }
 }
 
-@Composable
-fun RelatedProducts(navController: NavController){
-    Column ( modifier = Modifier.background(color = Color(0XFFffffff))){
-        CommonTitle("Có thể bạn thích")
-        SpacerHeight(16.dp)
-        LazyRow (
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ){
-            items(topSellingProductList, key = { it.id }) {
-                ProductEachRow(data = it, navController = navController){
-                        productId -> navController.navigate("show_product_by_id/$productId")
-                }
-            }
-        }
-    }
-}
+//@Composable
+//fun RelatedProducts(navController: NavController){
+//    Column ( modifier = Modifier.background(color = Color(0XFFffffff))){
+//        CommonTitle("Có thể bạn thích")
+//        SpacerHeight(16.dp)
+//        LazyRow (
+//            horizontalArrangement = Arrangement.spacedBy(12.dp)
+//        ){
+//            items(topSellingProductList, key = { it.id }) {
+//                ProductEachRow(data = it, navController = navController){
+//                        productId -> navController.navigate("show_product_by_id/$productId")
+//                }
+//            }
+//        }
+//    }
+//}
 
 @Composable
 fun ProductDescription(){

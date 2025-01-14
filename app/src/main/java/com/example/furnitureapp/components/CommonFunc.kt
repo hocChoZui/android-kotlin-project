@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -32,7 +33,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.furnitureapp.R
+import com.example.furnitureapp.model.Product
 import com.example.furnitureapp.model.TopSellingProduct
 
 @Composable
@@ -46,12 +49,12 @@ fun SpacerHeight(height : Dp = 10.dp){
 }
 
 @Composable
-fun ProductEachRow(data : TopSellingProduct,
+fun ProductEachRow(product: Product,
                    modifier: Modifier = Modifier,
                    navController: NavController,
                    onClick : (Int) -> Unit
 ){
-    val productId = data.id
+    val productId = product.id
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp))
@@ -60,15 +63,21 @@ fun ProductEachRow(data : TopSellingProduct,
     ){
         Column {
             Box{
-                Image(
-                    painter = painterResource(id = data.imageResId),
-                    contentDescription = data.name,
-                    modifier = Modifier
-                        .width(160.dp)
-                        .height(200.dp)
-                        .padding(start = 12.dp, end = 12.dp),
-
-                    )
+//                Image(
+//                    painter = painterResource(id = product.imageResId),
+//                    contentDescription = product.productName,
+//                    modifier = Modifier
+//                        .width(160.dp)
+//                        .height(200.dp)
+//                        .padding(start = 12.dp, end = 12.dp),
+//
+//                    )
+                AsyncImage(
+                           modifier = Modifier.size(64.dp).clip(CircleShape),
+                            model = "https://photos.google.com/share/AF1QipMcoK4sfKAurkhCbt8Dy7iRLTC_YS4j-pP5wc1VT1-wgRfgCBPzeFOVtfgZWwTMKw/photo/AF1QipOYCZeTnjDgYb1MZYdRpH5DC0D4h_5Fl8snRRpN?key=aWlKTlRHcGxEZmNrbUNNZTBFLVlQZW9NY3dKWHNn",
+                           contentDescription = "avatar",
+                           contentScale = ContentScale.Crop
+                       )
 
                     Icon(
                         painter = painterResource(id = R.drawable.heart),
@@ -90,7 +99,7 @@ fun ProductEachRow(data : TopSellingProduct,
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.Start
             ) {
-                Text(text = data.name,
+                Text(text = product.productName,
                     maxLines = 1,
                     style = TextStyle(
                         fontSize = 14.sp,
@@ -100,7 +109,7 @@ fun ProductEachRow(data : TopSellingProduct,
                         )
 
                 )
-                Text(text = data.price,
+                Text(text = "${product.price}đ",
                     maxLines = 1,
                     style = TextStyle(
                         fontSize = 14.sp,

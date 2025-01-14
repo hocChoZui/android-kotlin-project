@@ -29,29 +29,30 @@ import com.example.furnitureapp.R
 import com.example.furnitureapp.components.BackButton
 import com.example.furnitureapp.components.ProductEachRow
 import com.example.furnitureapp.components.SpacerHeight
+import com.example.furnitureapp.model.Product
 import com.example.furnitureapp.model.topSellingProductList
 
-@Composable
-fun ShowProductByCategory(categoryName: String, navController: NavController){
-    Column(modifier = Modifier.fillMaxSize().padding(8.dp)) {
-        SpacerHeight(18.dp)
-        BackButton{navController.popBackStack()}
-        Text(text= categoryName, style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.W600))
-        SpacerHeight(18.dp)
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxWidth(),
-            content = {
-                items(topSellingProductList, key = {it.id}){
-                    ProductEachRow(data = it, navController = navController){
-                            productId -> navController.navigate("show_product_by_id/$productId")
-                    }
-                }
-            }
-        )
-
-    }
-
-}
+//@Composable
+//fun ShowProductByCategory(categoryName: String, navController: NavController){
+//    Column(modifier = Modifier.fillMaxSize().padding(8.dp)) {
+//        SpacerHeight(18.dp)
+//        BackButton{navController.popBackStack()}
+//        Text(text= categoryName, style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.W600))
+//        SpacerHeight(18.dp)
+//        LazyVerticalGrid(
+//            columns = GridCells.Fixed(2),
+//            verticalArrangement = Arrangement.spacedBy(12.dp),
+//            horizontalArrangement = Arrangement.spacedBy(12.dp),
+//            modifier = Modifier.fillMaxWidth(),
+//            content = {
+//                items(topSellingProductList, key = {it.id}){ product ->
+//                    ProductEachRow(product = product, navController = navController){
+//                            productId -> navController.navigate("show_product_by_id/$productId")
+//                    }
+//                }
+//            }
+//        )
+//
+//    }
+//
+//}

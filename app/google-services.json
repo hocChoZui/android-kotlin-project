@@ -12,7 +12,20 @@
           "package_name": "com.example.furnitureapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "240237248871-17hrduru7808d1vupojo33m9mit74mka.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.furnitureapp",
+            "certificate_hash": "64bd379702735ef542aeffc61e9cf8f1980d66ba"
+          }
+        },
+        {
+          "client_id": "240237248871-81t4ino63s8as77siev3pi3cb7t754ld.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCT1aWRw1wIkEHlPZ4HoM7gXyA0Cb-44Ic"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "240237248871-81t4ino63s8as77siev3pi3cb7t754ld.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

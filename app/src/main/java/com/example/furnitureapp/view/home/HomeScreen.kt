@@ -52,20 +52,31 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.furnitureapp.R
 import com.example.furnitureapp.components.CommonTitle
 import com.example.furnitureapp.components.ProductEachRow
 import com.example.furnitureapp.components.SpacerHeight
 import com.example.furnitureapp.model.Categories
+import com.example.furnitureapp.model.Product
 import com.example.furnitureapp.model.bannerList
 import com.example.furnitureapp.model.categoriesList
 import com.example.furnitureapp.model.topSellingProductList
+import com.example.furnitureapp.viewmodel.ProductViewModel
 import kotlinx.coroutines.delay
 
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun HomeScreen(modifier: Modifier = Modifier, navController: NavController,productViewModel: ProductViewModel) {
+
+    val listOfProduct = productViewModel.listProduct
+
+    LaunchedEffect(Unit) {
+        productViewModel.getAllProduct()
+    }
+
+
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(8.dp)) {
@@ -79,9 +90,9 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
                 SliderBanner()
                 SpacerHeight(12.dp)
                 CategoriesRow(navController)
-                NewProductRow(navController)
+                NewProductRow(navController,listOfProduct)
                 SpacerHeight(16.dp)
-                TopSellingColumn(navController)
+                TopSellingColumn(navController,listOfProduct)
             }
         }
 
@@ -200,7 +211,7 @@ fun CategoryEachRow(categories: Categories,
 
 
 @Composable
-fun TopSellingColumn( navController: NavController){
+fun TopSellingColumn( navController: NavController,listOfProduct : List<Product>){
         CommonTitle("Bán chạy")
         SpacerHeight(16.dp)
 
@@ -210,8 +221,8 @@ fun TopSellingColumn( navController: NavController){
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxWidth().height(1000.dp),
                 content = {
-                    items(topSellingProductList, key = {it.id}){
-                        ProductEachRow(data = it, navController = navController){
+                    items(listOfProduct, key = {it.id}){ product->
+                        ProductEachRow(product = product, navController = navController){
                                 productId -> navController.navigate("show_product_by_id/$productId")
                         }
                     }
@@ -221,15 +232,15 @@ fun TopSellingColumn( navController: NavController){
 }
 
 @Composable
-fun NewProductRow(navController: NavController){
+fun NewProductRow(navController: NavController,listOfProduct : List<Product>){
     Column (){
         CommonTitle("Sản phẩm mới")
         SpacerHeight(16.dp)
         LazyRow (
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ){
-            items(topSellingProductList, key = { it.id }) {
-                ProductEachRow(data = it,navController = navController){
+            items(listOfProduct, key = { it.id }) { product ->
+                ProductEachRow(product = product,navController = navController){
                         productId -> navController.navigate("show_product_by_id/$productId")
                 }
             }
