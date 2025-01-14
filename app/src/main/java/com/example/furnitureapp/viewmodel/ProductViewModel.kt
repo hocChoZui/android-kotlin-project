@@ -17,7 +17,9 @@ class ProductViewModel : ViewModel() {
     fun getAllProduct() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = ProductRetrofitClient.ProductAPIService.getAllProduct()
+                val response = ProductRetrofitClient.productAPIService.getAllProduct()
+                Log.d("ProductViewModel", "Products fetched successfully: ${response.toString()}")
+
                 response.let {
                     listProduct = it
                     Log.d("ProductViewModel", "Products fetched successfully: ${it.size}")

@@ -1,25 +1,24 @@
 package com.example.furnitureapp.retrofit
 
-import androidx.test.espresso.core.internal.deps.dagger.Module
 import com.google.gson.GsonBuilder
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
+
 
 object Constant{
-    const val BASE_URL = "http://192.168.180.84/api/"
+    const val BASE_URL = "http://172.20.10.12/404api/"
 }
 
 object ProductRetrofitClient{
-    private val retrofit by lazy {
+     val productAPIService : ProductAPIService by lazy {
         Retrofit.Builder()
             .baseUrl(Constant.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory
+                .create(GsonBuilder().create()))
             .build()
+            .create(ProductAPIService::class.java)
     }
-    val ProductAPIService: ProductAPIService by lazy {
-        retrofit.create(ProductAPIService::class.java)
-    }
+
 }
 
 //@Module

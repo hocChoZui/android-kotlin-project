@@ -3,7 +3,8 @@
     import com.example.furnitureapp.model.Product
     import retrofit2.http.GET
 
+
     interface ProductAPIService {
-        @GET("product_api/list_of_products.php")
+        @GET("product_api/list_of_products.php/")
         suspend fun getAllProduct():List<Product>
     }

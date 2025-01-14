@@ -100,9 +100,6 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController,produ
 
 }
 
-
-
-
 @Composable
 fun MySearchBar() {
     var searchString by remember { mutableStateOf("") }
@@ -130,8 +127,6 @@ fun MySearchBar() {
                     focusedContainerColor = Color(0xFFf4f4f4),
                     ),
 
-
-
                     leadingIcon = {
                         Icon(
                             painter = painterResource(id =R.drawable.search),
@@ -141,7 +136,6 @@ fun MySearchBar() {
                 )
 
             }
-
 }
 
 @Composable

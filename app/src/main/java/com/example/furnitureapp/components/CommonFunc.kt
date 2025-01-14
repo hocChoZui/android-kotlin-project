@@ -64,7 +64,7 @@ fun ProductEachRow(product: Product,
         Column {
             Box{
 //                Image(
-//                    painter = painterResource(id = product.imageResId),
+//                    painter = painterResource(id =  product.imgUrl),
 //                    contentDescription = product.productName,
 //                    modifier = Modifier
 //                        .width(160.dp)
@@ -74,7 +74,7 @@ fun ProductEachRow(product: Product,
 //                    )
                 AsyncImage(
                            modifier = Modifier.size(64.dp).clip(CircleShape),
-                            model = "https://photos.google.com/share/AF1QipMcoK4sfKAurkhCbt8Dy7iRLTC_YS4j-pP5wc1VT1-wgRfgCBPzeFOVtfgZWwTMKw/photo/AF1QipOYCZeTnjDgYb1MZYdRpH5DC0D4h_5Fl8snRRpN?key=aWlKTlRHcGxEZmNrbUNNZTBFLVlQZW9NY3dKWHNn",
+                            model = "https://www.pinterest.com/pin/848998967291919262/",
                            contentDescription = "avatar",
                            contentScale = ContentScale.Crop
                        )
