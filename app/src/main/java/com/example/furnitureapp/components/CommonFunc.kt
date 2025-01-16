@@ -29,6 +29,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,53 +55,37 @@ fun ProductEachRow(product: Product,
                    navController: NavController,
                    onClick : (Int) -> Unit
 ){
-    val productId = product.id
     Box(
         modifier = Modifier
+            .width(160.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(Color(0xFFf3f3f3))
-            .clickable { onClick(productId) }
+            .clickable { onClick(product.id) }
     ){
-        Column {
-            Box{
-//                Image(
-//                    painter = painterResource(id = product.imageResId),
-//                    contentDescription = product.productName,
-//                    modifier = Modifier
-//                        .width(160.dp)
-//                        .height(200.dp)
-//                        .padding(start = 12.dp, end = 12.dp),
-//
-//                    )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+            Box(){
                 AsyncImage(
-                           modifier = Modifier.size(64.dp).clip(CircleShape),
-                            model = "https://photos.google.com/share/AF1QipMcoK4sfKAurkhCbt8Dy7iRLTC_YS4j-pP5wc1VT1-wgRfgCBPzeFOVtfgZWwTMKw/photo/AF1QipOYCZeTnjDgYb1MZYdRpH5DC0D4h_5Fl8snRRpN?key=aWlKTlRHcGxEZmNrbUNNZTBFLVlQZW9NY3dKWHNn",
+                           modifier = Modifier
+                               .fillMaxWidth()
+                               .height(180.dp),
+                            model = product.anh_dai_dien,
                            contentDescription = "avatar",
                            contentScale = ContentScale.Crop
                        )
-
-                    Icon(
-                        painter = painterResource(id = R.drawable.heart),
-                        contentDescription = "Favorite",
-                        modifier = Modifier
-                            .padding(12.dp)
-                            .size(18.dp)
-                            .align(Alignment.TopEnd),
-                        tint = Color.Unspecified
-                    )
-
-            }
+                }
 
             Column(modifier= Modifier
-                .width(160.dp)
+                .fillMaxWidth()
                 .padding(8.dp)
                 .height(40.dp),
-
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.Start
             ) {
-                Text(text = product.productName,
+                Text(text = product.ten_san_pham,
                     maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W400,
@@ -109,7 +94,7 @@ fun ProductEachRow(product: Product,
                         )
 
                 )
-                Text(text = "${product.price}đ",
+                Text(text = "${product.gia}đ",
                     maxLines = 1,
                     style = TextStyle(
                         fontSize = 14.sp,
