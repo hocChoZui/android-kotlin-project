@@ -69,6 +69,12 @@ import com.example.furnitureapp.components.SpacerWidth
 
 
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.example.furnitureapp.components.CommonTitle
+import com.example.furnitureapp.components.ProductEachRow
 import com.example.furnitureapp.model.Product
 import com.example.furnitureapp.viewmodel.ProductViewModel
 
@@ -79,8 +85,11 @@ fun ProductDetailScreen(productId: Int ,
 ) {
     LaunchedEffect(Unit) {
         productViewModel.getProductById(productId)
+        productViewModel.getAllProduct()
     }
     val product = productViewModel.product
+    val listOfProduct = productViewModel.listProduct
+    val shuffledProducts = listOfProduct.shuffled().take(10)
 
     if(product.id == 0){
         Box(
@@ -95,7 +104,7 @@ fun ProductDetailScreen(productId: Int ,
     else{
         Scaffold(
             modifier = Modifier.padding(top = 12.dp, start = 8.dp, end = 8.dp, bottom = 4.dp),
-            containerColor =  Color.LightGray,
+            containerColor =  Color(0xFFEDEDED),
             topBar = {
 
                 TopBar(
@@ -122,10 +131,10 @@ fun ProductDetailScreen(productId: Int ,
                     if (product!=null){
                         //ImageSlider()
                         ProductTitle(product)
-                        SpacerHeight(16.dp)
-                        //RelatedProducts(navController)
-                        SpacerHeight(16.dp)
-                        ProductDescription()
+                        SpacerHeight(12.dp)
+                        ProductDescription(product)
+                        SpacerHeight(12.dp)
+                        RelatedProducts(navController,shuffledProducts)
                     }
 
                 }
@@ -152,6 +161,14 @@ fun ProductDetailScreen(productId: Int ,
 //            state = pagerState,
 //            modifier = Modifier.height(300.dp)
 //        ) { currentPage ->
+//                AsyncImage(
+//                modifier = Modifier
+//                .fillMaxWidth()
+//                .height(180.dp),
+//                model = product.anh_dai_dien,
+//                contentDescription = "avatar",
+//                contentScale = ContentScale.Crop
+//                )
 //            Image(
 //                painter = painterResource(id = categoriesList[currentPage].cateResId),
 //                contentDescription = "",
@@ -419,7 +436,7 @@ fun ProductTitle(product: Product) {
 
                     withStyle(
                         style = SpanStyle(
-                            fontSize = 14.sp,
+                            fontSize = 15.sp,
                             fontWeight = FontWeight.W400,
                             color = Color.Black
                         )
@@ -446,7 +463,7 @@ fun ProductTitle(product: Product) {
 
                     withStyle(
                         style = SpanStyle(
-                            fontSize = 14.sp,
+                            fontSize = 15.sp,
                             fontWeight = FontWeight.W400,
                             color = Color.Black,
 
@@ -468,40 +485,82 @@ fun ProductTitle(product: Product) {
     }
 }
 
-//@Composable
-//fun RelatedProducts(navController: NavController){
-//    Column ( modifier = Modifier.background(color = Color(0XFFffffff))){
-//        CommonTitle("Có thể bạn thích")
-//        SpacerHeight(16.dp)
-//        LazyRow (
-//            horizontalArrangement = Arrangement.spacedBy(12.dp)
-//        ){
-//            items(topSellingProductList, key = { it.id }) {
-//                ProductEachRow(data = it, navController = navController){
-//                        productId -> navController.navigate("show_product_by_id/$productId")
-//                }
-//            }
-//        }
-//    }
-//}
+@Composable
+fun RelatedProducts(navController: NavController,product : List<Product>){
+    Column ( modifier = Modifier
+       .background(color = Color(0XFFffffff))
+
+    ){
+        CommonTitle("Có thể bạn thích")
+        LazyRow (modifier = Modifier.padding(bottom = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ){
+            items(product, key = { it.id }) {
+                ProductEachRow(product = it, navController = navController){
+                        productId -> navController.navigate("show_product_by_id/$productId")
+                }
+            }
+        }
+    }
+}
 
 @Composable
-fun ProductDescription(){
+fun ProductDescription(product: Product) {
+    var isExpanded by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = Color(0XFFffffff)),
-    ){
-        SpacerHeight(12.dp)
-        Text(text = "Mô tả sản phẩm",style = TextStyle(
-            fontSize = 16.sp,
-            fontWeight = FontWeight.W500,
-            color = Color.DarkGray
-        ))
+            .padding(bottom = 4.dp)
+            .background(color = Color(0XFFffffff))
+    ) {
         SpacerHeight(12.dp)
 
+        Text(
+            text = "Mô tả sản phẩm",
+            style = TextStyle(
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W500,
+                color = Color.DarkGray
+            )
+        )
+
+        SpacerHeight(8.dp)
+
+        Text(
+            text = product.mo_ta,
+            style = TextStyle(
+                fontSize = 15.sp,
+                fontWeight = FontWeight.W400,
+                color = Color.Black,
+                lineHeight = 22.sp
+            ),
+            maxLines = if (isExpanded) Int.MAX_VALUE else 3,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        SpacerHeight(12.dp)
+        HorizontalDivider(
+            modifier = Modifier.weight(1f),
+            thickness = 0.8.dp,
+            color = Color.LightGray
+        )
+        SpacerHeight(8.dp)
+        Text(
+            text = if (isExpanded) "Thu gọn" else "Xem thêm",
+            color = Color(0XFFEF683A),
+            fontWeight = FontWeight.Bold,
+            fontSize = 14.sp,
+            modifier = Modifier
+                .clickable { isExpanded = !isExpanded }
+                .padding(4.dp)
+                .align(alignment = Alignment.CenterHorizontally)
+        )
+
+        SpacerHeight(8.dp)
     }
 }
+
 
 @Composable
 fun QuantitySelector(
@@ -581,7 +640,7 @@ fun AddToCartButton(onAddClick: () -> Unit ,onChatClick: () -> Unit ) {
            onClick = onAddClick,
            modifier = Modifier
                .fillMaxWidth()
-               .height(48.dp).padding(start = 12.dp, end = 12.dp)
+               .height(48.dp).padding(start = 12.dp)
              ,
            shape = RoundedCornerShape(12.dp),
            colors = ButtonDefaults.buttonColors(
