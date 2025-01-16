@@ -1,5 +1,6 @@
 package com.example.furnitureapp.view.home
 
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -181,6 +182,16 @@ fun CategoryEachRow(categories: Categories,
 ) {
     val categoryId = categories.ma_loai
     val categoryName = categories.ten_loai
+
+    val cateResId: Int = when (categoryName) {
+        "Bàn trang điểm" -> R.drawable.hairdresser
+        "Bàn ăn" -> R.drawable.table
+        "Sofa" -> R.drawable.seater_sofa
+        "Giường ngủ" -> R.drawable.double_bed
+        "Tủ quần áo" -> R.drawable.wardrobe
+        "Kệ sách" -> R.drawable.bookshelf
+        else -> R.drawable.fur_logo
+    }
     Column(
         modifier = Modifier
             .padding(end = 12.dp)
@@ -199,8 +210,9 @@ fun CategoryEachRow(categories: Categories,
                 .background(Color(0xFFf3f3f3)),
             contentAlignment = Alignment.Center
         ) {
+
             Image(
-                painter = painterResource(id = R.drawable.bookshelf),
+                painter = painterResource(id = cateResId),
                 contentDescription = "",
                 modifier = Modifier.size(38.dp),
                 contentScale = ContentScale.Fit

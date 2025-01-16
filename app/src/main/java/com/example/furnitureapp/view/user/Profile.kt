@@ -45,36 +45,36 @@ import com.example.furnitureapp.components.CommonTitle
 import com.example.furnitureapp.components.SpacerHeight
 import com.example.furnitureapp.components.SpacerWidth
 import com.example.furnitureapp.viewmodel.AuthState
-import com.example.furnitureapp.viewmodel.AuthViewModel
+import com.example.furnitureapp.viewmodel.UserViewModel
 import com.google.firebase.auth.FirebaseUser
 
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    authViewModel: AuthViewModel,
+    userViewModel: UserViewModel,
 
 ){
-    LaunchedEffect(Unit) {
-        authViewModel.CheckAuthStatus()
-    }
+//    LaunchedEffect(Unit) {
+//        userViewModel.CheckAuthStatus()
+//    }
 
     Column(
         modifier = Modifier.fillMaxSize().background(Color(0XFFf9f9f9)),
     ){
 
-        ProfileHeader(navController,authViewModel)
+        ProfileHeader(navController,userViewModel)
         SpacerHeight(12.dp)
         ProfileOrder()
         SpacerHeight(12.dp)
-        LogoutButton(authViewModel)
+        LogoutButton(userViewModel)
     }
 }
 
 @Composable
-fun ProfileHeader(navController: NavController,authViewModel: AuthViewModel){
+fun ProfileHeader(navController: NavController,userViewModel: UserViewModel){
 
-    val authState = authViewModel.authState.observeAsState()
+    val userState = userViewModel.userState
 
     val colors = listOf(Color(0xFFE7E2FA), Color(0xFFF3F0FD))
 
@@ -87,7 +87,7 @@ fun ProfileHeader(navController: NavController,authViewModel: AuthViewModel){
             verticalAlignment = Alignment.Bottom
         ){
 
-            if(authState.value is AuthState.HuyXacThuc){
+            if(userState is AuthState.BanDau){
                 Box(
                     modifier = Modifier.weight(1f),
                     contentAlignment = Alignment.BottomEnd
@@ -117,42 +117,23 @@ fun ProfileHeader(navController: NavController,authViewModel: AuthViewModel){
                     }
                 }
             }
-            if (authState.value is AuthState.XacThuc){
-//               currentUser?.let{user->
-//                   user.photoUrl?.let{
-//                       AsyncImage(
-//                           modifier = Modifier.size(64.dp).clip(CircleShape),
-//                            model = ImageRequest.Builder(LocalContext.current)
-//                                .data(it)
-//                                .crossfade(true)
-//                                .build(),
-//                           contentDescription = "avatar",
-//                           contentScale = ContentScale.Crop
-//                       )
-//                   }
-//
-//               }
-                Image(
-                    painterResource(id = R.drawable.avatar),
+            if (userState is AuthState.XacThuc){
+                AsyncImage(
+                    model = userState.user.avatar,
                     contentDescription = "avatar",
                     modifier = Modifier.size(64.dp).clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
+
                 SpacerWidth(16.dp)
 
                 Box(
                     modifier = Modifier.weight(1f)
                 ){
                     Column(verticalArrangement = Arrangement.SpaceBetween,) {
-//                        currentUser?.let{user->
-//                            user.displayName?.let{name->
-                                Text(text = "name", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.W600))
-                            //}
 
-                        //}
+                        Text(text = userState.user.ten_khach_hang, style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.W600))
 
-                        SpacerHeight(6.dp)
-                        Text(text = "Thành viên: ", style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.W400))
                     }
                     Box(modifier = Modifier
                         .clickable {  }
@@ -220,11 +201,11 @@ fun OrderStatusItem(iconId :Int , text: String) {
 }
 
 @Composable
-fun LogoutButton(authViewModel: AuthViewModel){
+fun LogoutButton(userViewModel: UserViewModel){
 
-    val authState = authViewModel.authState.observeAsState()
+    val userState = userViewModel.userState
 
-    if(authState.value is AuthState.XacThuc){
+    if(userState is AuthState.XacThuc){
         Row(
             modifier= Modifier.fillMaxWidth()
                 .padding(bottom = 20.dp),
@@ -232,7 +213,7 @@ fun LogoutButton(authViewModel: AuthViewModel){
         ){
             OutlinedButton (
                 modifier = Modifier.weight(1f).padding(horizontal = 20.dp),
-                onClick = { authViewModel.Logout() },
+                onClick = { userViewModel.logoutUser()  },
                 shape = RoundedCornerShape(4.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor =Color(0XFFf9f9f9),

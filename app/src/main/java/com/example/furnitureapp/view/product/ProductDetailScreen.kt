@@ -73,23 +73,33 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import coil.compose.AsyncImage
 import com.example.furnitureapp.components.CommonTitle
 import com.example.furnitureapp.components.ProductEachRow
+import com.example.furnitureapp.model.Gallery
 import com.example.furnitureapp.model.Product
+import com.example.furnitureapp.viewmodel.GalleryViewModel
 import com.example.furnitureapp.viewmodel.ProductViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProductDetailScreen(productId: Int ,
                         navController: NavController,
-                        productViewModel: ProductViewModel
+                        productViewModel: ProductViewModel,
+                        galleryViewModel: GalleryViewModel
 ) {
+    galleryViewModel.getAllImage(productId)
+
     LaunchedEffect(Unit) {
         productViewModel.getProductById(productId)
         productViewModel.getAllProduct()
+
     }
     val product = productViewModel.product
     val listOfProduct = productViewModel.listProduct
     val shuffledProducts = listOfProduct.shuffled().take(10)
+    var listOfImages = galleryViewModel.listOfImage
 
     if(product.id == 0){
         Box(
@@ -129,7 +139,12 @@ fun ProductDetailScreen(productId: Int ,
             ) {
                 item {
                     if (product!=null){
-                        //ImageSlider()
+                        if(listOfImages.isNotEmpty()){
+                            ImageSlider(product,listOfImages)
+                        }else{
+                            listOfImages = emptyList()
+                            ImageSlider(product,listOfImages)
+                        }
                         ProductTitle(product)
                         SpacerHeight(12.dp)
                         ProductDescription(product)
@@ -146,84 +161,84 @@ fun ProductDetailScreen(productId: Int ,
 }
 
 
-//@Composable
-//fun ImageSlider(product: Product) {
-//    val pagerState = rememberPagerState(pageCount = { product.size })
-//
-//    Box(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .height(406.dp)
-//            .background(color = Color(0XFFffffff))
-//    ) {
-//
-//        HorizontalPager(
-//            state = pagerState,
-//            modifier = Modifier.height(300.dp)
-//        ) { currentPage ->
-//                AsyncImage(
-//                modifier = Modifier
-//                .fillMaxWidth()
-//                .height(180.dp),
-//                model = product.anh_dai_dien,
-//                contentDescription = "avatar",
-//                contentScale = ContentScale.Crop
-//                )
-//            Image(
-//                painter = painterResource(id = categoriesList[currentPage].cateResId),
-//                contentDescription = "",
-//                contentScale = ContentScale.Crop,
-//                modifier = Modifier.fillMaxSize()
-//            )
-//        }
-//
-//        LazyRow(
-//            modifier = Modifier
-//                .align(Alignment.BottomCenter)
-//                .fillMaxWidth()
-//        ) {
-//            items(categoriesList, key = { it.cateResId }) {
-//                ImageEachRow(categories = it, pagerState = pagerState)
-//            }
-//        }
-//    }
-//}
+@Composable
+fun ImageSlider(product: Product,listOfImages : List<Gallery>) {
+
+    val allImages = if (listOfImages.isNotEmpty()) {
+        listOf(product.anh_dai_dien) + listOfImages.map { it.duong_dan_anh }
+    } else {
+        listOf(product.anh_dai_dien)
+    }
+
+    val pagerState = rememberPagerState(pageCount = { allImages.size })
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(406.dp)
+            .background(color = Color(0XFFffffff))
+    ) {
+
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.height(300.dp)
+        ) { currentPage ->
+                AsyncImage(
+                modifier = Modifier.fillMaxSize(),
+                model = allImages[currentPage],
+                contentDescription = "avatar",
+                contentScale = ContentScale.Crop
+                )
+
+        }
+
+        LazyRow(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+        ) {
+            items(allImages) {image ->
+                val index = allImages.indexOf(image)
+                ImageEachRow(image = image, pagerState = pagerState,index)
+            }
+        }
+    }
+}
 
 
-//@Composable
-//fun ImageEachRow(categories: Categories,pagerState:PagerState){
-//    val index = categoriesList.indexOf(categories)
-//    val coroutineScope = rememberCoroutineScope()
-//    Column(
-//        modifier = Modifier
-//            .padding(end = 12.dp)
-//            .width(64.dp)
-//            .height(76.dp)
-//            .border(0.5.dp, Color.Gray,)
-//            .clickable {
-//                coroutineScope.launch {
-//                    pagerState.animateScrollToPage(index)
-//                }
-//            },
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.SpaceBetween
-//    ) {
-//
-//        Box(
-//            modifier = Modifier
-//                .fillMaxSize(),
-//            contentAlignment = Alignment.Center
-//        ) {
-//            Image(
-//                painter = painterResource(id = categories.cateResId),
-//                contentDescription = "",
-//                modifier = Modifier.size(54.dp),
-//                contentScale = ContentScale.Fit
-//            )
-//
-//        }
-//    }
-//}
+@Composable
+fun ImageEachRow(image :String,pagerState:PagerState,index:Int){
+    val coroutineScope = rememberCoroutineScope()
+    Column(
+        modifier = Modifier
+            .padding(end = 12.dp)
+            .width(64.dp)
+            .height(76.dp)
+            .border(0.5.dp, Color.Gray,)
+            .clickable {
+                coroutineScope.launch {
+                    pagerState.animateScrollToPage(index)
+                }
+            },
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            AsyncImage(
+                model = image,
+                contentDescription = "Thumbnail",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.FillBounds
+            )
+
+        }
+    }
+}
 
 @Composable
 fun TopBar(
@@ -282,7 +297,7 @@ fun ProductTitle(product: Product) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
 
-                    Text(
+                    Text(modifier = Modifier.padding(top = 8.dp),
                         text = "${product.ten_san_pham}",
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 2,
@@ -488,7 +503,7 @@ fun ProductTitle(product: Product) {
 @Composable
 fun RelatedProducts(navController: NavController,product : List<Product>){
     Column ( modifier = Modifier
-       .background(color = Color(0XFFffffff))
+        .background(color = Color(0XFFffffff))
 
     ){
         CommonTitle("Có thể bạn thích")
@@ -503,6 +518,7 @@ fun RelatedProducts(navController: NavController,product : List<Product>){
         }
     }
 }
+
 
 @Composable
 fun ProductDescription(product: Product) {

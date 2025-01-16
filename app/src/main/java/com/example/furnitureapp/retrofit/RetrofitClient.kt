@@ -30,3 +30,23 @@ object CategoryRetrofitClient {
             .create(CategoryAPIService::class.java)
     }
 }
+
+object GalleryRetrofitClient {
+    val galleryAPIService: GalleryAPIService by lazy {
+        Retrofit.Builder()
+            .baseUrl(Constant.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
+            .build()
+            .create(GalleryAPIService::class.java)
+    }
+}
+
+object UserRetrofitClient {
+    val userAPIService: UserAPIService by lazy {
+        Retrofit.Builder()
+            .baseUrl(Constant.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
+            .build()
+            .create(UserAPIService::class.java)
+    }
+}

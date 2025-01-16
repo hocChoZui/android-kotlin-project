@@ -66,5 +66,4 @@ class ProductViewModel : ViewModel() {
             }
         }
     }
-
 }

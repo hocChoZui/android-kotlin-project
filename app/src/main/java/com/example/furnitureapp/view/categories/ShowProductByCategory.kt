@@ -34,16 +34,20 @@ import com.example.furnitureapp.components.ProductEachRow
 import com.example.furnitureapp.components.SpacerHeight
 import com.example.furnitureapp.model.Product
 import com.example.furnitureapp.model.topSellingProductList
+import com.example.furnitureapp.retrofit.GalleryAPIService
+import com.example.furnitureapp.viewmodel.GalleryViewModel
 import com.example.furnitureapp.viewmodel.ProductViewModel
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
 fun ShowProductByCategory(id: Int, navController: NavController,
                           productViewModel: ProductViewModel,
-                          name : String
+                          name : String,
+
 ){
     val categoryName = name;
-        productViewModel.getProductByCategoryId(id)
+
+    productViewModel.getProductByCategoryId(id)
 
     val listProductByCateId = productViewModel.listProductByCategoryId
 

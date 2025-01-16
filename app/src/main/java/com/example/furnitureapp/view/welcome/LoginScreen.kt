@@ -57,18 +57,18 @@ import com.example.furnitureapp.components.BackButton
 import com.example.furnitureapp.components.SpacerHeight
 import com.example.furnitureapp.components.SpacerWidth
 import com.example.furnitureapp.viewmodel.AuthState
-import com.example.furnitureapp.viewmodel.AuthViewModel
+import com.example.furnitureapp.viewmodel.UserViewModel
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel) {
+fun LoginScreen(modifier: Modifier = Modifier, navController: NavController, userViewModel: UserViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    val authState = authViewModel.authState.observeAsState()
+    val userState = userViewModel.userState
     val context = LocalContext.current
 
-    LaunchedEffect(authState.value) {
-        when (authState.value) {
+    LaunchedEffect(userState) {
+        when (userState) {
             is AuthState.XacThuc -> {
                 navController.navigate("main_screen"){
                     popUpTo("login_screen") { inclusive = true }
@@ -78,7 +78,7 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController, aut
 
             is AuthState.Error -> Toast.makeText(
                 context,
-                (authState.value as AuthState.Error).message, Toast.LENGTH_SHORT
+                (userState as AuthState.Error).message, Toast.LENGTH_SHORT
             ).show()
 
             else -> Unit
@@ -161,7 +161,7 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController, aut
                 keyboardActions = KeyboardActions(
                     onDone = {
                         focusManager.clearFocus()
-                        authViewModel.Login(email, password)
+                        userViewModel.loginUser(email, password)
                     }
                 ),
                 visualTransformation = PasswordVisualTransformation(),
@@ -186,7 +186,7 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController, aut
             Button(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).height(54.dp),
                 onClick = {
-                    authViewModel.Login(email,password)
+                    userViewModel.loginUser(email,password)
                 },
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(

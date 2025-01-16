@@ -16,15 +16,15 @@ import com.example.furnitureapp.view.cart.EmptyCart
 import com.example.furnitureapp.view.home.HomeScreen
 import com.example.furnitureapp.view.order.EmptyOrders
 import com.example.furnitureapp.view.user.ProfileScreen
-import com.example.furnitureapp.viewmodel.AuthViewModel
 import com.example.furnitureapp.viewmodel.CategoryViewModel
 import com.example.furnitureapp.viewmodel.ProductViewModel
+import com.example.furnitureapp.viewmodel.UserViewModel
 
 
 @Composable
 fun MainScreen( modifier: Modifier = Modifier,
                 navController: NavController,
-                authViewModel: AuthViewModel,
+                userViewModel: UserViewModel,
                 productViewModel: ProductViewModel,
                 categoryViewModel: CategoryViewModel
 ){
@@ -56,7 +56,7 @@ fun MainScreen( modifier: Modifier = Modifier,
             navController = navController,
             modifier = Modifier.padding(innerPadding),
             selectedIndex ,
-            authViewModel = authViewModel,
+            userViewModel = userViewModel,
             productViewModel = productViewModel,
             categoryViewModel = categoryViewModel
             )
@@ -67,7 +67,7 @@ fun MainScreen( modifier: Modifier = Modifier,
 fun ContentScreen(navController: NavController,
                   modifier: Modifier = Modifier,
                   selectedIndex: Int ,
-                  authViewModel: AuthViewModel,
+                  userViewModel: UserViewModel,
                   productViewModel: ProductViewModel,
                   categoryViewModel: CategoryViewModel
 ) {
@@ -75,6 +75,6 @@ fun ContentScreen(navController: NavController,
         0-> HomeScreen(modifier,navController,productViewModel,categoryViewModel)
         1-> EmptyCart(modifier,navController)
         2-> EmptyOrders(modifier,navController)
-        4-> ProfileScreen(modifier,navController,authViewModel)
+        4-> ProfileScreen(modifier,navController,userViewModel)
     }
 }

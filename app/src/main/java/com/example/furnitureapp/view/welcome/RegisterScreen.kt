@@ -55,33 +55,31 @@ import com.example.furnitureapp.components.BackButton
 import com.example.furnitureapp.components.SpacerHeight
 import com.example.furnitureapp.components.SpacerWidth
 import com.example.furnitureapp.viewmodel.AuthState
-import com.example.furnitureapp.viewmodel.AuthViewModel
 
 @Composable
-fun RegisterScreen(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel) {
+fun RegisterScreen(modifier: Modifier = Modifier, navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    val authState = authViewModel.authState.observeAsState()
     val context = LocalContext.current
 
-    LaunchedEffect(authState.value) {
-        when (authState.value) {
-            is AuthState.DangKyThanhCong -> {
-                navController.navigate("login_screen"){
-                    // ngăn không cho quay trở lại màn hình đăng ký nếu đăng kys thành công
-                    popUpTo("register_screen") { inclusive = true }
-                }
-            }
-
-            is AuthState.Error -> Toast.makeText(
-                context,
-                (authState.value as AuthState.Error).message, Toast.LENGTH_SHORT
-            ).show()
-
-            else -> Unit
-        }
-    }
+//    LaunchedEffect(authState.value) {
+//        when (authState.value) {
+//            is AuthState.DangKyThanhCong -> {
+//                navController.navigate("login_screen"){
+//                    // ngăn không cho quay trở lại màn hình đăng ký nếu đăng kys thành công
+//                    popUpTo("register_screen") { inclusive = true }
+//                }
+//            }
+//
+//            is AuthState.Error -> Toast.makeText(
+//                context,
+//                (authState.value as AuthState.Error).message, Toast.LENGTH_SHORT
+//            ).show()
+//
+//            else -> Unit
+//        }
+//    }
 Column (modifier = Modifier.fillMaxSize()){
     SpacerHeight(28.dp)
     BackButton{navController.popBackStack()}
@@ -158,7 +156,7 @@ Column (modifier = Modifier.fillMaxSize()){
             keyboardActions = KeyboardActions(
                 onDone = {
                     focusManager.clearFocus()
-                    authViewModel.Login(email, password)
+                   // authViewModel.Login(email, password)
                 }
             ),
             colors = TextFieldDefaults.colors(
@@ -174,7 +172,7 @@ Column (modifier = Modifier.fillMaxSize()){
         Button(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).height(54.dp),
             onClick = {
-                authViewModel.Register(email,password)
+               // authViewModel.Register(email,password)
             },
             shape = RoundedCornerShape(50),
             colors = ButtonDefaults.buttonColors(
