@@ -66,14 +66,11 @@ fun OrderDetailScreen(userId: Int,
        orderViewModel.getOrderInfo(userId)
     }
 
-
-
     val items = orderViewModel.listOfOrderItem
 
     val item = items.find{ it.id == orderId}
 
     val listOfProduct = productViewModel.listProduct
-
 
     val priceEachItem = items.map { it.tong_tien.toDouble() ?: 0.0}
     var totalPrice : Double = 0.0
@@ -83,58 +80,64 @@ fun OrderDetailScreen(userId: Int,
     }
     val price = NumberFormat.getInstance(Locale("vi", "VN")).format(totalPrice)
 
-    if(item != null){
-        EmptyOrder()
-    }else{
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 24.dp),
-                horizontalAlignment = Alignment.Start
-            ) {
-                BackButton { navController.popBackStack() }
-                Text(
-                    text = "Giỏ hàng",
-                    style = TextStyle(fontSize = 28.sp, fontWeight = FontWeight.Bold),
-                    modifier = Modifier.padding(top = 16.dp)
-                )
+            BackButton { navController.popBackStack() }
+            if(item == null){
+                EmptyOrder()
             }
+            else{
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 24.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
 
-            Spacer(modifier = Modifier.height(16.dp))
 
-            LazyColumn(
-                modifier = Modifier.weight(1f)
-            ) {
-                items(items, key = {it.id}) { item ->
-                    OrderItemRow(item = item,
-                        listOfProduct = listOfProduct,
+                    Text(
+                        text = "Chi tiết đơn hàng",
+                        style = TextStyle(fontSize = 28.sp, fontWeight = FontWeight.Bold),
+                        modifier = Modifier.padding(top = 16.dp)
                     )
+                }
+
+                Text(
+                    text = "Trạng thái: ${item.trang_thai.toString()}",
+                    style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Light, color = Color.Magenta),
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                LazyColumn(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    items(items, key = {it.id}) { item ->
+                        OrderItemRow(item = item,
+                            listOfProduct = listOfProduct,
+                        )
+                    }
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 45.dp)
+                ) {
+                    SummaryRow(label = "Tổng tiền hàng", value = "${price} đ")
+                    SpacerHeight(8.dp)
+                    SummaryRow(label = "Tổng phí vận chuyển", value = "Miễn phí")
+                    SpacerHeight(8.dp)
+                    SummaryRow(label = "Tổng thanh toán", value = "${price} đ", bold = true)
+
+
                 }
             }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 45.dp)
-            ) {
-                SummaryRow(label = "Tổng tiền hàng", value = "${price} đ")
-                SpacerHeight(8.dp)
-                SummaryRow(label = "Tổng phí vận chuyển", value = "Miễn phí")
-                SpacerHeight(8.dp)
-                SummaryRow(label = "Tổng thanh toán", value = "${price} đ", bold = true)
-
-
-            }
         }
     }
 
-
-}
 
 @Composable
 fun OrderItemRow(
@@ -144,28 +147,6 @@ fun OrderItemRow(
     val product = listOfProduct.find { it.id == item.ma_san_pham }
 
     if (product != null) {
-        var showRemoveDialog by remember { mutableStateOf(false) }
-
-        if (showRemoveDialog) {
-            AlertDialog(
-                onDismissRequest = { showRemoveDialog = false },
-                title = { Text("Xóa sản phẩm") },
-                text = { Text("Bạn có muốn xóa sản phẩm này khỏi giỏ hàng không?") },
-                confirmButton = {
-                    TextButton(onClick = {
-                        showRemoveDialog = false
-                    }) {
-                        Text("Xóa")
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showRemoveDialog = false }) {
-                        Text("Hủy")
-                    }
-                }
-            )
-        }
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -197,8 +178,7 @@ fun OrderItemRow(
             }
             Spacer(modifier = Modifier.width(16.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "${item.so_luong}", style = MaterialTheme.typography.bodyMedium)
-                val giaSp = item.so_luong * product.gia
+                val giaSp =  product.gia
                 val sp = NumberFormat.getInstance(Locale("vi", "VN")).format(giaSp)
                 Text(text = "${sp} đ", style = MaterialTheme.typography.bodyMedium)
             }
