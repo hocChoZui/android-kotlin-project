@@ -54,7 +54,7 @@ fun ProfileScreen(
     navController: NavController,
     userViewModel: UserViewModel,
 
-){
+    ){
 //    LaunchedEffect(Unit) {
 //        userViewModel.CheckAuthStatus()
 //    }
@@ -74,110 +74,115 @@ fun ProfileScreen(
 @Composable
 fun ProfileHeader(navController: NavController,userViewModel: UserViewModel){
 
-    val userState = userViewModel.userState
+    val userState by userViewModel::userState
 
     val colors = listOf(Color(0xFFE7E2FA), Color(0xFFF3F0FD))
 
-        SpacerHeight(12.dp)
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .height(160.dp)
-            .background(Brush.horizontalGradient(colors))
-            .padding(20.dp),
-            verticalAlignment = Alignment.Bottom
-        ){
+    SpacerHeight(12.dp)
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .height(160.dp)
+        .background(Brush.horizontalGradient(colors))
+        .padding(20.dp),
+        verticalAlignment = Alignment.Bottom
+    ){
 
-            if(userState is AuthState.BanDau){
-                Box(
-                    modifier = Modifier.weight(1f),
-                    contentAlignment = Alignment.BottomEnd
+        if(userState is AuthState.BanDau){
+            Box(
+                modifier = Modifier.weight(1f),
+                contentAlignment = Alignment.BottomEnd
+            ){
+                Row(
+
                 ){
-                    Row(
+                    Button  (onClick = {navController.navigate("login_screen") }, shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = Color(0xFFA18AEC),
+
+                            )) {
+                        Text(text = "Đăng nhập", style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.W400))
+                    }
+                    SpacerWidth(8.dp)
+
+                    OutlinedButton (onClick = { navController.navigate("register_screen") },
+                        shape = RoundedCornerShape(8.dp),
+                        border = BorderStroke(1.dp, Color.White),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = Color(0xFFA18AEC),
+                            contentColor = Color.White)
+                    ) {
+                        Text(text = "Đăng ký", style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.W400))
+                    }
+                }
+            }
+        }
+        if (userState is AuthState.XacThuc){
+            val user = (userState as AuthState.XacThuc).user
+            val userId = user.id
+            AsyncImage(
+                model = user.avatar,
+                contentDescription = "avatar",
+                modifier = Modifier.size(64.dp).clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+
+            SpacerWidth(16.dp)
+
+            Box(
+                modifier = Modifier.weight(1f)
+            ){
+                Column(verticalArrangement = Arrangement.SpaceBetween,) {
+
+                    Text(text = user.ten_khach_hang, style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.W600))
+
+                }
+                Box(modifier = Modifier
+                    .clickable {  }
+                    .size(42.dp)
+                    .clip(CircleShape)
+                    .align(Alignment.CenterEnd)
+                    .clickable {  },
 
                     ){
-                        Button  (onClick = {navController.navigate("login_screen") }, shape = RoundedCornerShape(8.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.White,
-                                contentColor = Color(0xFFA18AEC),
-
-                                )) {
-                            Text(text = "Đăng nhập", style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.W400))
+                    Icon(
+                        painterResource(id = R.drawable.note_pen),
+                        contentDescription = "Edit profile",
+                        modifier = Modifier.size(24.dp).align(Alignment.Center).clickable {
+                            navController.navigate("edit_profile/$userId")
                         }
-                        SpacerWidth(8.dp)
-
-                        OutlinedButton (onClick = { navController.navigate("register_screen") },
-                            shape = RoundedCornerShape(8.dp),
-                            border = BorderStroke(1.dp, Color.White),
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                containerColor = Color(0xFFA18AEC),
-                                contentColor = Color.White)
-                        ) {
-                            Text(text = "Đăng ký", style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.W400))
-                        }
-                    }
+                    )
                 }
+
             }
-            if (userState is AuthState.XacThuc){
-                AsyncImage(
-                    model = userState.user.avatar,
-                    contentDescription = "avatar",
-                    modifier = Modifier.size(64.dp).clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-
-                SpacerWidth(16.dp)
-
-                Box(
-                    modifier = Modifier.weight(1f)
-                ){
-                    Column(verticalArrangement = Arrangement.SpaceBetween,) {
-
-                        Text(text = userState.user.ten_khach_hang, style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.W600))
-
-                    }
-                    Box(modifier = Modifier
-                        .clickable {  }
-                        .size(42.dp)
-                        .clip(CircleShape)
-                        .align(Alignment.CenterEnd)
-                        .clickable {  },
-
-                        ){
-                        Icon(
-                            painterResource(id = R.drawable.note_pen),
-                            contentDescription = "Edit profile",
-                            modifier = Modifier.size(24.dp).align(Alignment.Center))
-                    }
-
-                }
-            }
-
-
-
         }
+
+
+
     }
+}
 
 
 @Composable
 fun ProfileOrder(){
     val title = "Đơn hàng của tôi"
 
-   Column(modifier = Modifier.fillMaxWidth().background(Color.White).padding(horizontal = 20.dp)){
-       CommonTitle(title)
-       Row(modifier = Modifier
-           .fillMaxWidth(),
+    Column(modifier = Modifier.fillMaxWidth().background(Color.White).padding(horizontal = 20.dp)){
+        CommonTitle(title)
+        Row(modifier = Modifier
+            .fillMaxWidth(),
 
-           horizontalArrangement = Arrangement.SpaceBetween
-       ){
-           OrderStatusItem(iconId = R.drawable.wallet,text = "Chờ \nxác nhận")
-           OrderStatusItem(iconId = R.drawable.wallet_income,text = "Chờ\n vận chuyển")
-           OrderStatusItem(iconId = R.drawable.shipping_timed,text = "Chờ\n giao hàng")
-           OrderStatusItem(iconId = R.drawable.comment_alt,text = "Chưa \nđánh giá")
-           OrderStatusItem(iconId = R.drawable.truck_arrow_left,text = "Đổi trả \n& huỷ")
+            horizontalArrangement = Arrangement.SpaceBetween
+        ){
+            OrderStatusItem(iconId = R.drawable.wallet,text = "Chờ \nxác nhận")
+            OrderStatusItem(iconId = R.drawable.wallet_income,text = "Chờ\n vận chuyển")
+            OrderStatusItem(iconId = R.drawable.shipping_timed,text = "Chờ\n giao hàng")
+            OrderStatusItem(iconId = R.drawable.comment_alt,text = "Chưa \nđánh giá")
+            OrderStatusItem(iconId = R.drawable.truck_arrow_left,text = "Đổi trả \n& huỷ")
 
 
-       }
-   }
+        }
+    }
 }
 
 @Composable

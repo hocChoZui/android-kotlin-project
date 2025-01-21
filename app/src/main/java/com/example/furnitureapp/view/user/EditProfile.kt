@@ -1,54 +1,63 @@
-package com.example.furnitureapp.view.user
-
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-class EditProfileActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            EditProfileScreenCardBased()
-        }
-    }
-}
+import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import com.example.furnitureapp.model.User
+import com.example.furnitureapp.viewmodel.AuthState
+import com.example.furnitureapp.viewmodel.UserViewModel
+import com.google.android.gms.auth.api.Auth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditProfileScreenCardBased() {
-    Scaffold(
+fun EditProfileScreen(userId : Int, navController: NavController,userViewModel: UserViewModel) {
+    val userState by userViewModel::userState
+    userViewModel.getUserAddress(userId)
+   val listOfAddress = userViewModel.listAddress
+    val defaultAddress = listOfAddress.find { it.mac_dinh == 1 }
+        Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Sửa Hồ sơ") },
                 navigationIcon = {
-                    IconButton(onClick = { /* Handle back action */ }) {
+                    IconButton(onClick = { navController.popBackStack()}) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
-                    Text(
-                        text = "Lưu",
-                        color = Color.LightGray,
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .clickable { /* Handle save action */ }
-                    )
+
                 }
             )
         }
@@ -59,20 +68,39 @@ fun EditProfileScreenCardBased() {
                 .fillMaxSize()
                 .background(Color.White)
         ) {
-            ProfileHeaderCard()
-            Spacer(modifier = Modifier.height(16.dp))
-            ProfileInfoCard("Tên", "Thiết lập ngay", isEditable = true)
-            ProfileInfoCard("Giới tính", "Thiết lập ngay", isEditable = true)
-            ProfileInfoCard("Ngày sinh", "Thiết lập ngay", isEditable = true)
-            ProfileInfoCard("Điện thoại", "*******87", isEditable = false)
-            ProfileInfoCard("Email", "Thiết lập ngay", isEditable = true)
-            ProfileInfoCard("Tài khoản liên kết", "", isEditable = false)
+           if(userState is AuthState.XacThuc){
+               val user = (userState as AuthState.XacThuc).user
+
+               ProfileHeaderCard(user)
+               Spacer(modifier = Modifier.height(16.dp))
+               ProfileInfoCard("Tên", user.ten_khach_hang, isEditable = true)
+               ProfileInfoCard("Username/Email", user.tai_khoan, isEditable = false)
+               ProfileInfoCard("Ngày sinh", "Thiết lập ngay", isEditable = true)
+               if (defaultAddress != null) {
+                   ProfileInfoCard("Điện thoại", defaultAddress.so_dien_thoai, isEditable = true)
+                   ProfileInfoCard("Địa chỉ", defaultAddress.dia_chi, isEditable = true)
+               }
+
+           }
+            Button(
+                modifier = Modifier.width(160.dp).height(50.dp).align(Alignment.CenterHorizontally),
+                onClick = {
+                   navController.navigate("change_password/$userId")
+                },
+                shape = RoundedCornerShape(50),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF896de7),
+                    contentColor = Color.White
+                )
+            ) {
+                Text(text = "Đổi mật khẩu", fontWeight = FontWeight.W400, fontSize = 18.sp)
+            }
         }
     }
 }
 
 @Composable
-fun ProfileHeaderCard() {
+fun ProfileHeaderCard(user : User) {
     Card(
         shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp),
         modifier = Modifier
@@ -93,16 +121,17 @@ fun ProfileHeaderCard() {
                     .clickable { /* Handle profile picture change */ },
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "Sửa", color = Color.Gray, fontSize = 14.sp)
+                AsyncImage(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    model =user.avatar,
+                    contentDescription = "avatar",
+                    contentScale = ContentScale.Crop
+                )
+            }
             }
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Chạm để thay đổi",
-                color = Color.White,
-                fontSize = 14.sp
-            )
         }
-    }
 }
 
 @Composable

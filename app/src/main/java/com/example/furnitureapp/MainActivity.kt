@@ -8,9 +8,11 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.furnitureapp.navigation.FurnitureNavGraph
+import com.example.furnitureapp.viewmodel.CartViewModel
 
 import com.example.furnitureapp.viewmodel.CategoryViewModel
 import com.example.furnitureapp.viewmodel.GalleryViewModel
+import com.example.furnitureapp.viewmodel.OrderViewModel
 import com.example.furnitureapp.viewmodel.ProductViewModel
 import com.example.furnitureapp.viewmodel.UserViewModel
 
@@ -24,13 +26,17 @@ class MainActivity : ComponentActivity() {
         val productViewModel by viewModels<ProductViewModel> ()
         val categoryViewModel by viewModels<CategoryViewModel> ()
         val galleryViewModel by viewModels<GalleryViewModel> ()
+        val cartViewModel by viewModels<CartViewModel> ()
+        val orderViewModel by viewModels<OrderViewModel> ()
         setContent {
 
            FurnitureNavGraph(
                userViewModel = userViewModel,
                productViewModel = productViewModel,
                categoryViewModel = categoryViewModel,
-               galleryViewModel = galleryViewModel
+               galleryViewModel = galleryViewModel,
+               cartViewModel = cartViewModel,
+               orderViewModel = orderViewModel
            )
           //GreetingPreview()
         }

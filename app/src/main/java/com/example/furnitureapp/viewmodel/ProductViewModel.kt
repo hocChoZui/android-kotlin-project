@@ -9,12 +9,16 @@ import androidx.lifecycle.viewModelScope
 import com.example.furnitureapp.model.Product
 import com.example.furnitureapp.retrofit.ProductRetrofitClient
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class ProductViewModel : ViewModel() {
     var listProduct: List<Product> by mutableStateOf(emptyList())
     var listProductByCategoryId : List<Product> by mutableStateOf(emptyList())
     var product : Product by mutableStateOf(Product(0,0,"",0.0,0,"","","","",""))
+
+    private val _productState = MutableStateFlow<Product?>(null)
+    val productState = _productState
 
     fun getAllProduct() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -32,13 +36,14 @@ class ProductViewModel : ViewModel() {
         }
     }
 
-    suspend fun getProductById(id: Int) {
+     fun getProductById(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response  = ProductRetrofitClient.productAPIService.getProductById(id)
                 Log.d("ProductViewModelId", "API Response: $response")
             if(response !=null){
                 product = response
+                _productState.value = product
             }else
             {
                 Log.d("ProductViewModelId", "Product by id : loi")

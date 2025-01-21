@@ -1,5 +1,6 @@
 package com.example.furnitureapp.navigation
 
+import EditProfileScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
@@ -9,18 +10,19 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.furnitureapp.MainScreen
 import com.example.furnitureapp.view.cart.CartScreen
-import com.example.furnitureapp.view.cart.EmptyCart
 import com.example.furnitureapp.view.categories.ShowProductByCategory
-import com.example.furnitureapp.view.order.EmptyOrders
-import com.example.furnitureapp.view.order.OrderDetailsScreen
+import com.example.furnitureapp.view.order.OrderDetailScreen
 import com.example.furnitureapp.view.order.OrderSummaryScreen
 import com.example.furnitureapp.view.order.OrdersScreen
 import com.example.furnitureapp.view.product.ProductDetailScreen
 import com.example.furnitureapp.view.user.ProfileScreen
+import com.example.furnitureapp.view.user.ChangePasswordScreen
 import com.example.furnitureapp.view.welcome.LoginScreen
 import com.example.furnitureapp.view.welcome.RegisterScreen
+import com.example.furnitureapp.viewmodel.CartViewModel
 import com.example.furnitureapp.viewmodel.CategoryViewModel
 import com.example.furnitureapp.viewmodel.GalleryViewModel
+import com.example.furnitureapp.viewmodel.OrderViewModel
 import com.example.furnitureapp.viewmodel.ProductViewModel
 import com.example.furnitureapp.viewmodel.UserViewModel
 
@@ -30,7 +32,9 @@ fun FurnitureNavGraph(modifier: Modifier = Modifier,
                      userViewModel: UserViewModel,
                       productViewModel: ProductViewModel,
                       categoryViewModel: CategoryViewModel,
-                      galleryViewModel: GalleryViewModel
+                      galleryViewModel: GalleryViewModel,
+                      cartViewModel: CartViewModel,
+                      orderViewModel: OrderViewModel
 ) {
     val navController = rememberNavController()
     NavHost(
@@ -42,32 +46,61 @@ fun FurnitureNavGraph(modifier: Modifier = Modifier,
             LoginScreen(modifier, navController, userViewModel)
         }
 
-        composable(route = Screen.EmptyOrderScreen.route) {
-            EmptyOrders(modifier,navController)
-        }
         composable(route = Screen.RegisterScreen.route) {
-            RegisterScreen(modifier, navController)
+            RegisterScreen(modifier, navController,userViewModel)
         }
         composable(route = Screen.MainScreen.route) {
-            MainScreen(modifier,navController,userViewModel,productViewModel,categoryViewModel)
+            MainScreen(modifier,navController,userViewModel,productViewModel,categoryViewModel,cartViewModel)
         }
         composable(route = Screen.ProfileScreen.route) {
             ProfileScreen(modifier, navController,userViewModel)
         }
-        composable(route = Screen.Order.route) {
-            OrdersScreen(modifier,navController)
+        composable(route = Screen.Order.route + "/{userId}",
+            arguments = listOf(
+                navArgument("userId") {type = NavType.IntType}
+            )
+        ) { backStackEntry->
+            val userId = backStackEntry.arguments?.getInt("userId") ?: 0
+            OrdersScreen(userId,modifier,navController,orderViewModel)
         }
-        composable(route = Screen.EmptyCart.route)  {
-            EmptyCart(modifier,navController)
+        //
+        composable(route = Screen.EditProfileScreen.route + "/{userId}",
+            arguments = listOf(
+                navArgument("userId") {type = NavType.IntType}
+            )
+        ) { backStackEntry->
+            val userId = backStackEntry.arguments?.getInt("userId") ?: 0
+            EditProfileScreen(userId,navController,userViewModel)
         }
-        composable(route = Screen.Cart.route) {
-            CartScreen(modifier,navController)
+            //
+        composable(route = Screen.ChangePasswordScreen.route + "/{userId}",
+            arguments = listOf(
+                navArgument("userId") {type = NavType.IntType}
+            )
+        ) { backStackEntry->
+            val userId = backStackEntry.arguments?.getInt("userId") ?: 0
+            ChangePasswordScreen(userId,navController,userViewModel)
+        }
+        composable(route = Screen.Cart.route + "/{userId}",
+            arguments = listOf(
+                navArgument("userId") {type = NavType.IntType}
+            )
+        ) {backStackEntry->
+            val userId = backStackEntry.arguments?.getInt("userId") ?: 0
+            CartScreen(userId,modifier,navController,cartViewModel,productViewModel)
         }
         composable(route = Screen.OrderSummary.route) {
             OrderSummaryScreen(modifier,navController)
         }
-        composable(route = Screen.OrderDetail.route) {
-            OrderDetailsScreen(modifier,navController)
+        composable(route = Screen.OrderDetailScreen.route + "/{userId}/{orderId}",
+            arguments = listOf(
+                navArgument("userId") {type = NavType.IntType},
+                navArgument("orderId") { type = NavType.IntType } ,
+            )
+        ) {backStackEntry ->
+            val userId = backStackEntry.arguments?.getInt("userId") ?: 0
+            val orderId = backStackEntry.arguments?.getInt("orderId") ?: 0
+            OrderDetailScreen(userId,orderId,modifier,navController,productViewModel,orderViewModel)
         }
         composable(route = Screen.ShowProductByCategoryName.route+ "/{id}/{name}",
                 arguments = listOf(
@@ -83,7 +116,7 @@ fun FurnitureNavGraph(modifier: Modifier = Modifier,
             arguments = listOf(navArgument("productId"){type = NavType.IntType})
         ){backStackEntry ->
             val productId = backStackEntry.arguments?.getInt("productId") ?:0
-            ProductDetailScreen(productId,navController,productViewModel,galleryViewModel)
+            ProductDetailScreen(productId,navController,productViewModel,galleryViewModel,cartViewModel,userViewModel)
         }
     }
 }

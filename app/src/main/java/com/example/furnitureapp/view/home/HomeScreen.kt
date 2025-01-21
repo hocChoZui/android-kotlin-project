@@ -51,6 +51,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,10 +64,12 @@ import com.example.furnitureapp.components.SpacerHeight
 import com.example.furnitureapp.model.Categories
 import com.example.furnitureapp.model.Product
 import com.example.furnitureapp.model.bannerList
-import com.example.furnitureapp.model.topSellingProductList
 import com.example.furnitureapp.viewmodel.CategoryViewModel
 import com.example.furnitureapp.viewmodel.ProductViewModel
+import com.example.furnitureapp.viewmodel.UserViewModel
 import kotlinx.coroutines.delay
+import java.text.Normalizer
+import java.util.regex.Pattern
 
 
 @Composable
@@ -74,22 +77,28 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
     productViewModel: ProductViewModel,
-    categoryViewModel: CategoryViewModel
+    categoryViewModel: CategoryViewModel,
+    userViewModel: UserViewModel
 ) {
 
     val listOfProduct = productViewModel.listProduct
     val listOfCategories = categoryViewModel.listOfCategories
+    var searchString by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         productViewModel.getAllProduct()
         categoryViewModel.getAllCategory()
+        userViewModel.checkAuthState()
     }
-
+    val filteredProducts = listOfProduct.filter {
+        removeVietnameseAccents(it.ten_san_pham).contains(removeVietnameseAccents(searchString), ignoreCase = true)
+    }
 
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(8.dp)) {
-        MySearchBar()
+        MySearchBar( searchString = searchString,
+            onSearchChange = { searchString = it })
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -101,7 +110,17 @@ fun HomeScreen(
                 CategoriesRow(navController,listOfCategories)
                 NewProductRow(navController,listOfProduct)
                 SpacerHeight(16.dp)
-                TopSellingColumn(navController,listOfProduct)
+                TopSellingColumn(navController,filteredProducts)
+            }
+            if (filteredProducts.isEmpty()) {
+                item {
+                    Text(
+                        text = "Không có sản phẩm nào phù hợp với tìm kiếm.",
+                        style = TextStyle(fontSize = 18.sp, color = Color.Gray),
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
 
@@ -109,42 +128,51 @@ fun HomeScreen(
 
 }
 
+fun removeVietnameseAccents(input: String): String {
+    var normalized = Normalizer.normalize(input, Normalizer.Form.NFD)
+    val pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+")
+    normalized = pattern.matcher(normalized).replaceAll("")
+    return normalized
+}
+
 @Composable
-fun MySearchBar() {
-    var searchString by remember { mutableStateOf("") }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                OutlinedTextField(
-                    value = searchString,
-                    onValueChange = { searchString = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                        .clickable {
-                        },
-                    placeholder = {Text(text = "Tìm kiếm sản phẩm", style = TextStyle(fontSize = 15.sp))},
-                    shape = RoundedCornerShape(24.dp),
-                    readOnly = true,
-                    colors = TextFieldDefaults.colors(
-                        unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedContainerColor = Color(0xFFf4f4f4),
-                    focusedContainerColor = Color(0xFFf4f4f4),
-                    ),
-
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(id =R.drawable.search),
-                            contentDescription = "Search",
-                        )
-                    }
+fun MySearchBar(
+    searchString: String,
+    onSearchChange: (String) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        OutlinedTextField(
+            value = searchString,
+            onValueChange = { onSearchChange(it) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            placeholder = {
+                Text(
+                    text = "Tìm kiếm sản phẩm",
+                    style = TextStyle(fontSize = 15.sp)
                 )
-
+            },
+            shape = RoundedCornerShape(24.dp),
+            colors = TextFieldDefaults.colors(
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedContainerColor = Color(0xFFf4f4f4),
+                focusedContainerColor = Color(0xFFf4f4f4),
+            ),
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.search),
+                    contentDescription = "Search",
+                )
             }
+        )
+    }
 }
 
 @Composable

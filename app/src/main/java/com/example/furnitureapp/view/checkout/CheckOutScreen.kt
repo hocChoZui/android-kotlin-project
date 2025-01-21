@@ -12,7 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.furnitureapp.view.cart.SummaryRow
 
 @Composable
 fun CheckOutScreen(modifier: Modifier = Modifier) {
@@ -109,10 +108,10 @@ fun CheckOutScreen(modifier: Modifier = Modifier) {
                     .padding(bottom = 25.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                SummaryRow(label = "Tổng tiền hàng", value = "$200")
-                SummaryRow(label = "Tổng phí vận chuyển", value = "$8.00")
-                SummaryRow(label = "Thuế", value = "$0.00")
-                SummaryRow(label = "Tổng thanh toán", value = "$208", bold = true)
+//                SummaryRow(label = "Tổng tiền hàng", value = 0.0)
+//                SummaryRow(label = "Tổng phí vận chuyển", value = 0.0)
+//                SummaryRow(label = "Thuế", value = 0.0)
+//                SummaryRow(label = "Tổng thanh toán", value = 0.0, bold = true)
 
                 Spacer(modifier = Modifier.height(8.dp))
 

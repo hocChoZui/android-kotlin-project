@@ -41,6 +41,7 @@ object GalleryRetrofitClient {
     }
 }
 
+
 object UserRetrofitClient {
     val userAPIService: UserAPIService by lazy {
         Retrofit.Builder()
@@ -48,5 +49,26 @@ object UserRetrofitClient {
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
             .build()
             .create(UserAPIService::class.java)
+    }
+}
+
+object CartRetrofitClient {
+    val cartAPIService: CartAPIService by lazy {
+        Retrofit.Builder()
+            .baseUrl(Constant.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
+            .build()
+            .create(CartAPIService::class.java)
+    }
+}
+
+
+object OrderRetrofitClient {
+    val orderAPIService: OrderAPIService by lazy {
+        Retrofit.Builder()
+            .baseUrl(Constant.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
+            .build()
+            .create(OrderAPIService::class.java)
     }
 }

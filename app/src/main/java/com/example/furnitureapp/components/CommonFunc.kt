@@ -37,7 +37,8 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.furnitureapp.R
 import com.example.furnitureapp.model.Product
-import com.example.furnitureapp.model.TopSellingProduct
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun SpacerWidth(width: Dp = 10.dp){
@@ -55,6 +56,7 @@ fun ProductEachRow(product: Product,
                    navController: NavController,
                    onClick : (Int) -> Unit
 ){
+    val price = NumberFormat.getInstance(Locale("vi", "VN")).format(product.gia)
     Box(
         modifier = Modifier
             .width(160.dp)
@@ -94,7 +96,7 @@ fun ProductEachRow(product: Product,
                         )
 
                 )
-                Text(text = "${product.gia}đ",
+                Text(text = "${price} đ",
                     maxLines = 1,
                     style = TextStyle(
                         fontSize = 14.sp,

@@ -1,5 +1,6 @@
 package com.example.furnitureapp.view.product
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -76,18 +77,26 @@ import androidx.compose.runtime.setValue
 import coil.compose.AsyncImage
 import com.example.furnitureapp.components.CommonTitle
 import com.example.furnitureapp.components.ProductEachRow
+import com.example.furnitureapp.model.Cart
 import com.example.furnitureapp.model.Gallery
 import com.example.furnitureapp.model.Product
+import com.example.furnitureapp.viewmodel.AuthState
+import com.example.furnitureapp.viewmodel.CartViewModel
 import com.example.furnitureapp.viewmodel.GalleryViewModel
 import com.example.furnitureapp.viewmodel.ProductViewModel
+import com.example.furnitureapp.viewmodel.UserViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun ProductDetailScreen(productId: Int ,
                         navController: NavController,
                         productViewModel: ProductViewModel,
-                        galleryViewModel: GalleryViewModel
+                        galleryViewModel: GalleryViewModel,
+                        cartViewModel: CartViewModel,
+                        userViewModel: UserViewModel
 ) {
     galleryViewModel.getAllImage(productId)
 
@@ -100,6 +109,11 @@ fun ProductDetailScreen(productId: Int ,
     val listOfProduct = productViewModel.listProduct
     val shuffledProducts = listOfProduct.shuffled().take(10)
     var listOfImages = galleryViewModel.listOfImage
+
+    val isLoggedIn = userViewModel.checkAuthState()
+    val userState = userViewModel.userState
+    var quantity by  remember { mutableStateOf(1) }
+
 
     if(product.id == 0){
         Box(
@@ -126,8 +140,23 @@ fun ProductDetailScreen(productId: Int ,
             },
             bottomBar = {
                 AddToCartButton(
-                    onAddClick = {},
+                    onAddClick = {
+                        if (userState is AuthState.XacThuc) {
+                            val user = (userState as AuthState.XacThuc).user
+                            val cart = Cart(
+                                ma_san_pham = product.id,
+                                user_id = user.id,
+                                gia_ban = product.gia,
+                                so_luong = quantity
+                            )
+                            cartViewModel.addCart(cart)
+                            Log.d("AddCartViewModel ", cartViewModel.cartDelResult)
+                        }
+                    },
                     onChatClick = {},
+                    isLoggedIn = isLoggedIn,
+                    onAddToCart = { cart -> cartViewModel.addCart(cart) },
+                    navController
                 )
             }
 
@@ -145,7 +174,9 @@ fun ProductDetailScreen(productId: Int ,
                             listOfImages = emptyList()
                             ImageSlider(product,listOfImages)
                         }
-                        ProductTitle(product)
+                        ProductTitle(product,quantity,onQuantityChange = { newQuantity ->
+                            quantity = newQuantity
+                        })
                         SpacerHeight(12.dp)
                         ProductDescription(product)
                         SpacerHeight(12.dp)
@@ -275,7 +306,10 @@ fun TopBar(
 }
 
 @Composable
-fun ProductTitle(product: Product) {
+fun ProductTitle(product: Product,quantity: Int,
+                 onQuantityChange: (Int) -> Unit) {
+    val price = NumberFormat.getInstance(Locale("vi", "VN")).format(product.gia)
+    val maxQuantity = product.so_luong
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -309,7 +343,7 @@ fun ProductTitle(product: Product) {
                 SpacerHeight(4.dp)
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    repeat(5) {
+                    repeat(1) {
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = "Đánh giá",
@@ -321,7 +355,7 @@ fun ProductTitle(product: Product) {
                     SpacerWidth(4.dp)
 
                     Text(
-                        text = "4.8",
+                        text = "0",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.Gray
                     )
@@ -329,7 +363,7 @@ fun ProductTitle(product: Product) {
                     SpacerWidth(2.dp)
 
                     Text(
-                        text = "(653)",
+                        text = "(0)",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.Gray
                     )
@@ -363,23 +397,23 @@ fun ProductTitle(product: Product) {
                 .height(46.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier.width(72.dp).height(46.dp).padding(4.dp)
-                    .background(color = Color(0XFFEDEDED)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "-46%",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-//                        color = Color(0XFFEF683A)
-
-                    )
-                )
-            }
+//            Box(
+//                modifier = Modifier.width(72.dp).height(46.dp).padding(4.dp)
+//                    .background(color = Color(0XFFEDEDED)),
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Text(
+//                    text = "-46%",
+//                    style = TextStyle(
+//                        fontSize = 16.sp,
+////                        color = Color(0XFFEF683A)
+//
+//                    )
+//                )
+         //   }
             SpacerWidth(12.dp)
             Text(
-                text = "${product.gia}",
+                text = "${price}đ",
                 style = TextStyle(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
@@ -387,16 +421,16 @@ fun ProductTitle(product: Product) {
 
                 )
             )
-            SpacerWidth(12.dp)
-            Text(
-                text = "${product.gia}",
-                style = TextStyle(
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.W400,
-                    color = Color.Gray,
-                    textDecoration = TextDecoration.LineThrough
-                )
-            )
+//            SpacerWidth(12.dp)
+//            Text(
+//                text = "${product.gia}",
+//                style = TextStyle(
+//                    fontSize = 16.sp,
+//                    fontWeight = FontWeight.W400,
+//                    color = Color.Gray,
+//                    textDecoration = TextDecoration.LineThrough
+//                )
+//            )
         }
         HorizontalDivider(
             modifier = Modifier.weight(1f),
@@ -496,7 +530,13 @@ fun ProductTitle(product: Product) {
             )
 
         }
-        QuantitySelector(1, onDecrease = {}, onIncrease = {})
+        QuantitySelector(
+            quantity = quantity,
+            maxQuantity = maxQuantity,
+            onDecrease = { if (quantity > 1) onQuantityChange(quantity - 1) },
+            onIncrease = { if (quantity < maxQuantity) onQuantityChange(quantity + 1) },
+
+        )
     }
 }
 
@@ -581,8 +621,10 @@ fun ProductDescription(product: Product) {
 @Composable
 fun QuantitySelector(
     quantity: Int,
-    onIncrease: () -> Unit,
-    onDecrease: () -> Unit
+    maxQuantity: Int,
+    onDecrease: () -> Unit,
+    onIncrease: () -> Unit
+
 ){
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -595,7 +637,11 @@ fun QuantitySelector(
         Box(modifier = Modifier
             .size(36.dp)
             .background(color = Color(0XFFf5f5f5))){
-            IconButton(onClick =onDecrease) {
+            IconButton(onClick  = {
+                if (quantity < maxQuantity) {
+                    onIncrease()
+                }
+            }) {
                 Icon(painter = painterResource(id = R.drawable.minus),
                     contentDescription = "Favorite",
                     modifier = Modifier.size(20.dp)
@@ -634,7 +680,12 @@ fun QuantitySelector(
     }
 }
 @Composable
-fun AddToCartButton(onAddClick: () -> Unit ,onChatClick: () -> Unit ) {
+fun AddToCartButton(onAddClick: () -> Unit ,
+                    onChatClick: () -> Unit,
+                    isLoggedIn: Boolean,
+                    onAddToCart: (Cart) -> Unit,
+                    navController: NavController
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -653,7 +704,13 @@ fun AddToCartButton(onAddClick: () -> Unit ,onChatClick: () -> Unit ) {
             }
         }
        Button(
-           onClick = onAddClick,
+           onClick = {
+               if (isLoggedIn) {
+                   onAddClick()
+               } else {
+                   navController.navigate("login_screen")
+               }
+           },
            modifier = Modifier
                .fillMaxWidth()
                .height(48.dp).padding(start = 12.dp)

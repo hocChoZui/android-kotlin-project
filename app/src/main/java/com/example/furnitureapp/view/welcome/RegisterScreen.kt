@@ -44,42 +44,37 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.navigation.NavController
+import capitalizeWords
 import com.example.furnitureapp.R
 import com.example.furnitureapp.components.BackButton
 import com.example.furnitureapp.components.SpacerHeight
 import com.example.furnitureapp.components.SpacerWidth
-import com.example.furnitureapp.viewmodel.AuthState
+
+import com.example.furnitureapp.viewmodel.UserViewModel
+import isValidPassword
+import isValidUsername
+
 
 @Composable
-fun RegisterScreen(modifier: Modifier = Modifier, navController: NavController) {
-    var email by remember { mutableStateOf("") }
+fun RegisterScreen(modifier: Modifier = Modifier, navController: NavController,userViewModel: UserViewModel) {
+    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var fullname by remember { mutableStateOf("") }
+
+    val fullnameFocusRequester = remember { FocusRequester() }
+    val usernameFocusRequester = remember { FocusRequester() }
+    val passwordFocusRequester = remember { FocusRequester() }
 
     val context = LocalContext.current
 
-//    LaunchedEffect(authState.value) {
-//        when (authState.value) {
-//            is AuthState.DangKyThanhCong -> {
-//                navController.navigate("login_screen"){
-//                    // ngăn không cho quay trở lại màn hình đăng ký nếu đăng kys thành công
-//                    popUpTo("register_screen") { inclusive = true }
-//                }
-//            }
-//
-//            is AuthState.Error -> Toast.makeText(
-//                context,
-//                (authState.value as AuthState.Error).message, Toast.LENGTH_SHORT
-//            ).show()
-//
-//            else -> Unit
-//        }
-//    }
 Column (modifier = Modifier.fillMaxSize()){
     SpacerHeight(28.dp)
     BackButton{navController.popBackStack()}
@@ -105,10 +100,41 @@ Column (modifier = Modifier.fillMaxSize()){
         SpacerHeight(32.dp)
         val focusManager = LocalFocusManager.current
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-            value = email,
-            onValueChange = { email = it },
-            label = { Text(text = "Email") },
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).focusRequester(fullnameFocusRequester),
+            value = fullname,
+            onValueChange = { fullname   = it },
+            label = { Text(text = "Họ tên") },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.email),
+                    contentDescription = "Email Icon",
+                    modifier = Modifier.size(18.dp),
+                    tint = Color(0xFF9e9e9e))
+            },
+            colors = TextFieldDefaults.colors(
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedIndicatorColor = Color(0xFF896de7),
+                unfocusedContainerColor = Color(0xFFf4f4f4),
+                focusedContainerColor = Color(0xFFF3F0FD),
+
+                ),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            ),
+            shape = RoundedCornerShape(14.dp),
+        )
+        SpacerHeight(18.dp)
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp) .focusRequester(usernameFocusRequester),
+            value = username,
+            onValueChange = { username   = it },
+            label = { Text(text = "Tên đăng nhập") },
             leadingIcon = {
                 Icon(
                     painter = painterResource(id = R.drawable.email),
@@ -136,7 +162,7 @@ Column (modifier = Modifier.fillMaxSize()){
         )
         SpacerHeight(18.dp)
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp) .focusRequester(passwordFocusRequester),
             value = password,
             onValueChange = { password = it },
             label = { Text(text = "Mật khẩu") },
@@ -156,7 +182,6 @@ Column (modifier = Modifier.fillMaxSize()){
             keyboardActions = KeyboardActions(
                 onDone = {
                     focusManager.clearFocus()
-                   // authViewModel.Login(email, password)
                 }
             ),
             colors = TextFieldDefaults.colors(
@@ -168,11 +193,49 @@ Column (modifier = Modifier.fillMaxSize()){
                 ),
             shape = RoundedCornerShape(14.dp),
         )
-        SpacerHeight(46.dp)
+        SpacerHeight(26.dp)
         Button(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).height(54.dp),
             onClick = {
-               // authViewModel.Register(email,password)
+                when {
+                    fullname.isEmpty() -> {
+                        fullnameFocusRequester.requestFocus()
+                        Toast.makeText(context, "Vui lòng nhập họ tên", Toast.LENGTH_SHORT).show()
+                    }
+
+                    username.isEmpty() -> {
+                        usernameFocusRequester.requestFocus()
+                        Toast.makeText(context, "Vui lòng nhập tên đăng nhập", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    !isValidUsername(username) -> {
+                        usernameFocusRequester.requestFocus()
+                        Toast.makeText(context, "Tên đăng nhập không hợp lệ", Toast.LENGTH_SHORT).show()
+                    }
+                    password.isEmpty() -> {
+                        passwordFocusRequester.requestFocus()
+                        Toast.makeText(context, "Vui lòng nhập mật khẩu", Toast.LENGTH_SHORT).show()
+                    }
+                    !isValidPassword(password) -> {
+                        passwordFocusRequester.requestFocus()
+                        Toast.makeText(context, "Mật khẩu phải ít nhất 8 ký tự và không chứa khoảng trắng", Toast.LENGTH_SHORT).show()
+                    }
+
+                    else -> {
+                        val formattedFullname = capitalizeWords(fullname.trim())
+                        userViewModel.userSignUp(formattedFullname,username.trim(),password.trim()){res->
+                            if(res.error){
+                                Toast.makeText(context, res.message, Toast.LENGTH_SHORT).show()
+                            }
+                            else{
+                                Toast.makeText(context, res.message, Toast.LENGTH_SHORT).show()
+                                navController.navigate("login_screen")
+                            }
+
+                        }
+
+                    }
+                }
             },
             shape = RoundedCornerShape(50),
             colors = ButtonDefaults.buttonColors(
@@ -184,7 +247,7 @@ Column (modifier = Modifier.fillMaxSize()){
         }
 
 
-        SpacerHeight(46.dp)
+        SpacerHeight(26.dp)
 
         Row(
             modifier = Modifier
@@ -212,7 +275,7 @@ Column (modifier = Modifier.fillMaxSize()){
             )
         }
 
-        SpacerHeight(28.dp)
+        SpacerHeight(18.dp)
 
         Row(
             modifier = Modifier
@@ -269,12 +332,13 @@ Column (modifier = Modifier.fillMaxSize()){
                 )
             }
         }
-        SpacerHeight(28.dp)
-        Row(){
+        SpacerHeight(18.dp)
+        Row{
             Text(text = "Bạn đã có tài khoản?" )
             SpacerWidth(8.dp)
             Text(text = "Đăng nhập", modifier = Modifier.clickable {navController.navigate("login_screen")}, color = Color(0xFF8E6CEF))
         }
+        SpacerHeight(18.dp)
 
     }
 }

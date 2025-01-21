@@ -33,7 +33,6 @@ import com.example.furnitureapp.components.BackButton
 import com.example.furnitureapp.components.ProductEachRow
 import com.example.furnitureapp.components.SpacerHeight
 import com.example.furnitureapp.model.Product
-import com.example.furnitureapp.model.topSellingProductList
 import com.example.furnitureapp.retrofit.GalleryAPIService
 import com.example.furnitureapp.viewmodel.GalleryViewModel
 import com.example.furnitureapp.viewmodel.ProductViewModel
